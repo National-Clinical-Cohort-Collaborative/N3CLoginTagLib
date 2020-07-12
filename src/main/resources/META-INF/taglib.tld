@@ -3,7 +3,253 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
 	version="2.0">
+	<tlib-version>2.1</tlib-version>
+	<short-name>simp</short-name>
+	<uri>http://icts.uiowa.edu/n3c</uri>
 
-<tlib-version>2.1</tlib-version>
-<short-name>name</short-name>
+	<tag>
+		<name>getSequenceNumber</name>
+		<tag-class>org.cd2h.n3c.Sequence</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>dbtest</name>
+		<tag-class>org.cd2h.n3c.DBTest</tag-class>
+		<body-content>empty</body-content>
+	</tag>
+
+	<tag>
+		<name>foreachRegistration</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registration</name>
+		<tag-class>org.cd2h.n3c.registration.Registration</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteRegistration</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationEmail</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationEmail</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationOfficialFirstName</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationOfficialFirstName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>officialFirstName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationOfficialLastName</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationOfficialLastName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>officialLastName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationFirstName</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationFirstName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>firstName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationLastName</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationLastName</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>lastName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationInstitution</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationInstitution</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>institution</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationCreated</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationCreated</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>created</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationCreatedToNow</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationCreatedToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>created</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<function>
+		<name>registrationCount</name>
+		<function-class>org.cd2h.n3c.registration.RegistrationIterator</function-class>
+		<function-signature>java.lang.String registrationCount()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationExists</name>
+		<function-class>org.cd2h.n3c.registration.RegistrationIterator</function-class>
+		<function-signature>java.lang.String registrationExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>registrationEmailValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.String emailValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationOfficialFirstNameValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.String officialFirstNameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationOfficialLastNameValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.String officialLastNameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationFirstNameValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.String firstNameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationLastNameValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.String lastNameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationInstitutionValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.String institutionValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationCreatedValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.Date createdValue()</function-signature>
+	</function>
 </taglib>

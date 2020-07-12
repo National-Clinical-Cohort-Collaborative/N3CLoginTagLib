@@ -8,7 +8,22 @@
 .settings/org.eclipse.wst.validation.prefs -text
 .settings/org.maven.ide.eclipse.prefs -text
 /pom.xml -text svneol=unset#application/xml
+src/main/java/org/cd2h/n3c/DBTest.java -text
+src/main/java/org/cd2h/n3c/N3CLoginTagLibBodyTagSupport.java -text
+src/main/java/org/cd2h/n3c/N3CLoginTagLibTagSupport.java -text
 src/main/java/org/cd2h/n3c/README.txt -text
+src/main/java/org/cd2h/n3c/Sequence.java -text
+src/main/java/org/cd2h/n3c/registration/Registration.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationCreated.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationCreatedToNow.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationDeleter.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationEmail.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationFirstName.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationInstitution.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationIterator.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationLastName.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationOfficialFirstName.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationOfficialLastName.java -text
 src/main/resources/META-INF/taglib.tld -text svneol=unset#application/xml
 src/non-packaged-resources/Model.clay -text svneol=unset#application/xml
 src/non-packaged-resources/registration.sql -text
