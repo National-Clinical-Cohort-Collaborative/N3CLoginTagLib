@@ -40,9 +40,9 @@ CREATE TABLE n3c_admin.enclave (
      , approved TIMESTAMP
      , PRIMARY KEY (email)
      , CONSTRAINT FK_enclave_1 FOREIGN KEY (email)
-                  REFERENCES n3c_admin.registration (email)
+                  REFERENCES n3c_admin.registration (email) ON DELETE CASCADE ON UPDATE CASCADE
      , CONSTRAINT FK_enclave_2 FOREIGN KEY (level)
-                  REFERENCES n3c_admin.access_level (level)
+                  REFERENCES n3c_admin.access_level (level) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE n3c_admin.membership (
@@ -50,9 +50,9 @@ CREATE TABLE n3c_admin.membership (
      , label TEXT NOT NULL
      , joined TIMESTAMP
      , PRIMARY KEY (email, label)
-     , CONSTRAINT FK_membership_1 FOREIGN KEY (email)
-                  REFERENCES n3c_admin.registration (email)
      , CONSTRAINT FK_membership_2 FOREIGN KEY (label)
-                  REFERENCES n3c_admin.workstream (label)
+                  REFERENCES n3c_admin.workstream (label) ON DELETE CASCADE ON UPDATE CASCADE
+     , CONSTRAINT FK_membership_1 FOREIGN KEY (email)
+                  REFERENCES n3c_admin.registration (email) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
