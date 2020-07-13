@@ -1,4 +1,4 @@
-package org.cd2h.n3c.registration;
+package org.cd2h.n3c.workstream;
 
 
 import java.sql.PreparedStatement;
@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import java.util.Date;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -17,26 +16,13 @@ import org.cd2h.n3c.N3CLoginTagLibBodyTagSupport;
 
 @SuppressWarnings("serial")
 
-public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
-    String email = null;
-    String officialFirstName = null;
-    String officialLastName = null;
-    String firstName = null;
-    String lastName = null;
-    String institution = null;
-    String orcidId = null;
-    String gsuiteEmail = null;
-    String slackId = null;
-    String githubId = null;
-    String twitterId = null;
-    String expertise = null;
-    String therapeuticArea = null;
-    String assistantEmail = null;
-    Date created = null;
-    Date updated = null;
+public class WorkstreamIterator extends N3CLoginTagLibBodyTagSupport {
+    String label = null;
+    String fullName = null;
+    String description = null;
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
-	private static final Log log =LogFactory.getLog(Registration.class);
+	private static final Log log =LogFactory.getLog(Workstream.class);
 
 
     PreparedStatement stat = null;
@@ -46,11 +32,11 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
     String var = null;
     int rsCount = 0;
 
-	public static String registrationCount() throws JspTagException {
+	public static String workstreamCount() throws JspTagException {
 		int count = 0;
-		RegistrationIterator theIterator = new RegistrationIterator();
+		WorkstreamIterator theIterator = new WorkstreamIterator();
 		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from n3c_admin.registration"
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from n3c_admin.workstream"
 						);
 
 			ResultSet crs = stat.executeQuery();
@@ -61,22 +47,22 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
 			stat.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error generating Registration iterator");
+			throw new JspTagException("Error: JDBC error generating Workstream iterator");
 		} finally {
 			theIterator.freeConnection();
 		}
 		return "" + count;
 	}
 
-	public static Boolean registrationExists (String email) throws JspTagException {
+	public static Boolean workstreamExists (String label) throws JspTagException {
 		int count = 0;
-		RegistrationIterator theIterator = new RegistrationIterator();
+		WorkstreamIterator theIterator = new WorkstreamIterator();
 		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from n3c_admin.registration where 1=1"
-						+ " and email = ?"
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from n3c_admin.workstream where 1=1"
+						+ " and label = ?"
 						);
 
-			stat.setString(1,email);
+			stat.setString(1,label);
 			ResultSet crs = stat.executeQuery();
 
 			if (crs.next()) {
@@ -85,7 +71,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
 			stat.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error generating Registration iterator");
+			throw new JspTagException("Error: JDBC error generating Workstream iterator");
 		} finally {
 			theIterator.freeConnection();
 		}
@@ -98,13 +84,13 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
 
       try {
             int webapp_keySeq = 1;
-            stat = getConnection().prepareStatement("SELECT n3c_admin.registration.email from " + generateFromClause() + " where 1=1"
+            stat = getConnection().prepareStatement("SELECT n3c_admin.workstream.label from " + generateFromClause() + " where 1=1"
                                                         + generateJoinCriteria()
                                                         + " order by " + generateSortCriteria() + generateLimitCriteria());
             rs = stat.executeQuery();
 
             if (rs.next()) {
-                email = rs.getString(1);
+                label = rs.getString(1);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
@@ -112,14 +98,14 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
             e.printStackTrace();
             clearServiceState();
             freeConnection();
-            throw new JspTagException("Error: JDBC error generating Registration iterator: " + stat.toString());
+            throw new JspTagException("Error: JDBC error generating Workstream iterator: " + stat.toString());
         }
 
         return SKIP_BODY;
     }
 
     private String generateFromClause() {
-       StringBuffer theBuffer = new StringBuffer("n3c_admin.registration");
+       StringBuffer theBuffer = new StringBuffer("n3c_admin.workstream");
       return theBuffer.toString();
     }
 
@@ -132,7 +118,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
         if (sortCriteria != null) {
             return sortCriteria;
         } else {
-            return "email";
+            return "label";
         }
     }
 
@@ -147,7 +133,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
     public int doAfterBody() throws JspTagException {
         try {
             if (rs.next()) {
-                email = rs.getString(1);
+                label = rs.getString(1);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_AGAIN;
             }
@@ -155,7 +141,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
             e.printStackTrace();
             clearServiceState();
             freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across Registration");
+            throw new JspTagException("Error: JDBC error iterating across Workstream");
         }
         return SKIP_BODY;
     }
@@ -166,7 +152,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new JspTagException("Error: JDBC error ending Registration iterator");
+            throw new JspTagException("Error: JDBC error ending Workstream iterator");
         } finally {
             clearServiceState();
             freeConnection();
@@ -175,7 +161,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
     }
 
     private void clearServiceState() {
-        email = null;
+        label = null;
         parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
         this.rs = null;
@@ -211,15 +197,15 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
 
 
 
-	public String getEmail () {
-		return email;
+	public String getLabel () {
+		return label;
 	}
 
-	public void setEmail (String email) {
-		this.email = email;
+	public void setLabel (String label) {
+		this.label = label;
 	}
 
-	public String getActualEmail () {
-		return email;
+	public String getActualLabel () {
+		return label;
 	}
 }

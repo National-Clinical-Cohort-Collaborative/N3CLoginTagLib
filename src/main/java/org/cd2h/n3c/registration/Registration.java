@@ -31,7 +31,16 @@ public class Registration extends N3CLoginTagLibTagSupport {
 	String firstName = null;
 	String lastName = null;
 	String institution = null;
+	String orcidId = null;
+	String gsuiteEmail = null;
+	String slackId = null;
+	String githubId = null;
+	String twitterId = null;
+	String expertise = null;
+	String therapeuticArea = null;
+	String assistantEmail = null;
 	Date created = null;
+	Date updated = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -52,7 +61,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 			} else {
 				// an iterator or email was provided as an attribute - we need to load a Registration from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select official_first_name,official_last_name,first_name,last_name,institution,created from n3c_admin.registration where email = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("select official_first_name,official_last_name,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,created,updated from n3c_admin.registration where email = ?");
 				stmt.setString(1,email);
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
@@ -66,8 +75,26 @@ public class Registration extends N3CLoginTagLibTagSupport {
 						lastName = rs.getString(4);
 					if (institution == null)
 						institution = rs.getString(5);
+					if (orcidId == null)
+						orcidId = rs.getString(6);
+					if (gsuiteEmail == null)
+						gsuiteEmail = rs.getString(7);
+					if (slackId == null)
+						slackId = rs.getString(8);
+					if (githubId == null)
+						githubId = rs.getString(9);
+					if (twitterId == null)
+						twitterId = rs.getString(10);
+					if (expertise == null)
+						expertise = rs.getString(11);
+					if (therapeuticArea == null)
+						therapeuticArea = rs.getString(12);
+					if (assistantEmail == null)
+						assistantEmail = rs.getString(13);
 					if (created == null)
-						created = rs.getTimestamp(6);
+						created = rs.getTimestamp(14);
+					if (updated == null)
+						updated = rs.getTimestamp(15);
 					found = true;
 				}
 				stmt.close();
@@ -89,14 +116,23 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		currentInstance = null;
 		try {
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.registration set official_first_name = ?, official_last_name = ?, first_name = ?, last_name = ?, institution = ?, created = ? where email = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.registration set official_first_name = ?, official_last_name = ?, first_name = ?, last_name = ?, institution = ?, orcid_id = ?, gsuite_email = ?, slack_id = ?, github_id = ?, twitter_id = ?, expertise = ?, therapeutic_area = ?, assistant_email = ?, created = ?, updated = ? where email = ?");
 				stmt.setString(1,officialFirstName);
 				stmt.setString(2,officialLastName);
 				stmt.setString(3,firstName);
 				stmt.setString(4,lastName);
 				stmt.setString(5,institution);
-				stmt.setTimestamp(6,created == null ? null : new java.sql.Timestamp(created.getTime()));
-				stmt.setString(7,email);
+				stmt.setString(6,orcidId);
+				stmt.setString(7,gsuiteEmail);
+				stmt.setString(8,slackId);
+				stmt.setString(9,githubId);
+				stmt.setString(10,twitterId);
+				stmt.setString(11,expertise);
+				stmt.setString(12,therapeuticArea);
+				stmt.setString(13,assistantEmail);
+				stmt.setTimestamp(14,created == null ? null : new java.sql.Timestamp(created.getTime()));
+				stmt.setTimestamp(15,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
+				stmt.setString(16,email);
 				stmt.executeUpdate();
 				stmt.close();
 			}
@@ -122,14 +158,39 @@ public class Registration extends N3CLoginTagLibTagSupport {
 				lastName = "";
 			if (institution == null)
 				institution = "";
-			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.registration(email,official_first_name,official_last_name,first_name,last_name,institution,created) values (?,?,?,?,?,?,?)");
+			if (orcidId == null)
+				orcidId = "";
+			if (gsuiteEmail == null)
+				gsuiteEmail = "";
+			if (slackId == null)
+				slackId = "";
+			if (githubId == null)
+				githubId = "";
+			if (twitterId == null)
+				twitterId = "";
+			if (expertise == null)
+				expertise = "";
+			if (therapeuticArea == null)
+				therapeuticArea = "";
+			if (assistantEmail == null)
+				assistantEmail = "";
+			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.registration(email,official_first_name,official_last_name,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,created,updated) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			stmt.setString(1,email);
 			stmt.setString(2,officialFirstName);
 			stmt.setString(3,officialLastName);
 			stmt.setString(4,firstName);
 			stmt.setString(5,lastName);
 			stmt.setString(6,institution);
-			stmt.setTimestamp(7,created == null ? null : new java.sql.Timestamp(created.getTime()));
+			stmt.setString(7,orcidId);
+			stmt.setString(8,gsuiteEmail);
+			stmt.setString(9,slackId);
+			stmt.setString(10,githubId);
+			stmt.setString(11,twitterId);
+			stmt.setString(12,expertise);
+			stmt.setString(13,therapeuticArea);
+			stmt.setString(14,assistantEmail);
+			stmt.setTimestamp(15,created == null ? null : new java.sql.Timestamp(created.getTime()));
+			stmt.setTimestamp(16,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -235,6 +296,134 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		return institution;
 	}
 
+	public String getOrcidId () {
+		if (commitNeeded)
+			return "";
+		else
+			return orcidId;
+	}
+
+	public void setOrcidId (String orcidId) {
+		this.orcidId = orcidId;
+		commitNeeded = true;
+	}
+
+	public String getActualOrcidId () {
+		return orcidId;
+	}
+
+	public String getGsuiteEmail () {
+		if (commitNeeded)
+			return "";
+		else
+			return gsuiteEmail;
+	}
+
+	public void setGsuiteEmail (String gsuiteEmail) {
+		this.gsuiteEmail = gsuiteEmail;
+		commitNeeded = true;
+	}
+
+	public String getActualGsuiteEmail () {
+		return gsuiteEmail;
+	}
+
+	public String getSlackId () {
+		if (commitNeeded)
+			return "";
+		else
+			return slackId;
+	}
+
+	public void setSlackId (String slackId) {
+		this.slackId = slackId;
+		commitNeeded = true;
+	}
+
+	public String getActualSlackId () {
+		return slackId;
+	}
+
+	public String getGithubId () {
+		if (commitNeeded)
+			return "";
+		else
+			return githubId;
+	}
+
+	public void setGithubId (String githubId) {
+		this.githubId = githubId;
+		commitNeeded = true;
+	}
+
+	public String getActualGithubId () {
+		return githubId;
+	}
+
+	public String getTwitterId () {
+		if (commitNeeded)
+			return "";
+		else
+			return twitterId;
+	}
+
+	public void setTwitterId (String twitterId) {
+		this.twitterId = twitterId;
+		commitNeeded = true;
+	}
+
+	public String getActualTwitterId () {
+		return twitterId;
+	}
+
+	public String getExpertise () {
+		if (commitNeeded)
+			return "";
+		else
+			return expertise;
+	}
+
+	public void setExpertise (String expertise) {
+		this.expertise = expertise;
+		commitNeeded = true;
+	}
+
+	public String getActualExpertise () {
+		return expertise;
+	}
+
+	public String getTherapeuticArea () {
+		if (commitNeeded)
+			return "";
+		else
+			return therapeuticArea;
+	}
+
+	public void setTherapeuticArea (String therapeuticArea) {
+		this.therapeuticArea = therapeuticArea;
+		commitNeeded = true;
+	}
+
+	public String getActualTherapeuticArea () {
+		return therapeuticArea;
+	}
+
+	public String getAssistantEmail () {
+		if (commitNeeded)
+			return "";
+		else
+			return assistantEmail;
+	}
+
+	public void setAssistantEmail (String assistantEmail) {
+		this.assistantEmail = assistantEmail;
+		commitNeeded = true;
+	}
+
+	public String getActualAssistantEmail () {
+		return assistantEmail;
+	}
+
 	public Date getCreated () {
 		return created;
 	}
@@ -250,6 +439,24 @@ public class Registration extends N3CLoginTagLibTagSupport {
 
 	public void setCreatedToNow ( ) {
 		this.created = new java.util.Date();
+		commitNeeded = true;
+	}
+
+	public Date getUpdated () {
+		return updated;
+	}
+
+	public void setUpdated (Date updated) {
+		this.updated = updated;
+		commitNeeded = true;
+	}
+
+	public Date getActualUpdated () {
+		return updated;
+	}
+
+	public void setUpdatedToNow ( ) {
+		this.updated = new java.util.Date();
 		commitNeeded = true;
 	}
 
@@ -301,11 +508,83 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		}
 	}
 
+	public static String orcidIdValue() throws JspException {
+		try {
+			return currentInstance.getOrcidId();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function orcidIdValue()");
+		}
+	}
+
+	public static String gsuiteEmailValue() throws JspException {
+		try {
+			return currentInstance.getGsuiteEmail();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function gsuiteEmailValue()");
+		}
+	}
+
+	public static String slackIdValue() throws JspException {
+		try {
+			return currentInstance.getSlackId();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function slackIdValue()");
+		}
+	}
+
+	public static String githubIdValue() throws JspException {
+		try {
+			return currentInstance.getGithubId();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function githubIdValue()");
+		}
+	}
+
+	public static String twitterIdValue() throws JspException {
+		try {
+			return currentInstance.getTwitterId();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function twitterIdValue()");
+		}
+	}
+
+	public static String expertiseValue() throws JspException {
+		try {
+			return currentInstance.getExpertise();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function expertiseValue()");
+		}
+	}
+
+	public static String therapeuticAreaValue() throws JspException {
+		try {
+			return currentInstance.getTherapeuticArea();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function therapeuticAreaValue()");
+		}
+	}
+
+	public static String assistantEmailValue() throws JspException {
+		try {
+			return currentInstance.getAssistantEmail();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function assistantEmailValue()");
+		}
+	}
+
 	public static Date createdValue() throws JspException {
 		try {
 			return currentInstance.getCreated();
 		} catch (Exception e) {
 			 throw new JspTagException("Error in tag function createdValue()");
+		}
+	}
+
+	public static Date updatedValue() throws JspException {
+		try {
+			return currentInstance.getUpdated();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function updatedValue()");
 		}
 	}
 
@@ -316,7 +595,16 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		firstName = null;
 		lastName = null;
 		institution = null;
+		orcidId = null;
+		gsuiteEmail = null;
+		slackId = null;
+		githubId = null;
+		twitterId = null;
+		expertise = null;
+		therapeuticArea = null;
+		assistantEmail = null;
 		created = null;
+		updated = null;
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<N3CLoginTagLibTagSupport>();

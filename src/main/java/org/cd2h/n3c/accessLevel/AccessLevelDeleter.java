@@ -1,11 +1,10 @@
-package org.cd2h.n3c.registration;
+package org.cd2h.n3c.accessLevel;
 
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import java.util.Date;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -15,23 +14,10 @@ import org.cd2h.n3c.N3CLoginTagLibBodyTagSupport;
 
 @SuppressWarnings("serial")
 
-public class RegistrationDeleter extends N3CLoginTagLibBodyTagSupport {
-    String email = null;
-    String officialFirstName = null;
-    String officialLastName = null;
-    String firstName = null;
-    String lastName = null;
-    String institution = null;
-    String orcidId = null;
-    String gsuiteEmail = null;
-    String slackId = null;
-    String githubId = null;
-    String twitterId = null;
-    String expertise = null;
-    String therapeuticArea = null;
-    String assistantEmail = null;
-    Date created = null;
-    Date updated = null;
+public class AccessLevelDeleter extends N3CLoginTagLibBodyTagSupport {
+    int level = 0;
+    String label = null;
+    String description = null;
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
 
@@ -46,16 +32,16 @@ public class RegistrationDeleter extends N3CLoginTagLibBodyTagSupport {
         PreparedStatement stat;
         try {
             int webapp_keySeq = 1;
-            stat = getConnection().prepareStatement("DELETE from n3c_admin.registration where 1=1"
-                                                        + (email == null ? "" : " and email = ?")
+            stat = getConnection().prepareStatement("DELETE from n3c_admin.access_level where 1=1"
+                                                        + (level == 0 ? "" : " and level = ?")
                                                         );
-            if (email != null) stat.setString(webapp_keySeq++, email);
+            if (level != 0) stat.setInt(webapp_keySeq++, level);
             stat.execute();
 
         } catch (SQLException e) {
             e.printStackTrace();
             clearServiceState();
-            throw new JspTagException("Error: JDBC error generating Registration deleter");
+            throw new JspTagException("Error: JDBC error generating AccessLevel deleter");
         } finally {
             freeConnection();
         }
@@ -69,7 +55,7 @@ public class RegistrationDeleter extends N3CLoginTagLibBodyTagSupport {
 	}
 
     private void clearServiceState() {
-        email = null;
+        level = 0;
         parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
         this.rs = null;
@@ -87,15 +73,15 @@ public class RegistrationDeleter extends N3CLoginTagLibBodyTagSupport {
 
 
 
-	public String getEmail () {
-		return email;
+	public int getLevel () {
+		return level;
 	}
 
-	public void setEmail (String email) {
-		this.email = email;
+	public void setLevel (int level) {
+		this.level = level;
 	}
 
-	public String getActualEmail () {
-		return email;
+	public int getActualLevel () {
+		return level;
 	}
 }
