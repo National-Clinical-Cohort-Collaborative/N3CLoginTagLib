@@ -1,17 +1,3 @@
-CREATE TABLE n3c_admin.access_level (
-       level INT NOT NULL
-     , label TEXT
-     , description TEXT
-     , PRIMARY KEY (level)
-);
-
-CREATE TABLE n3c_admin.workstream (
-       label TEXT NOT NULL
-     , full_name TEXT
-     , description TEXT
-     , PRIMARY KEY (label)
-);
-
 CREATE TABLE n3c_admin.registration (
        email TEXT NOT NULL
      , official_first_name TEXT
@@ -27,22 +13,18 @@ CREATE TABLE n3c_admin.registration (
      , expertise TEXT
      , therapeutic_area TEXT
      , assistant_email TEXT
+     , enclave BOOLEAN
+     , workstreams BOOLEAN
      , created TIMESTAMP
      , updated TIMESTAMP
      , PRIMARY KEY (email)
 );
 
-CREATE TABLE n3c_admin.enclave (
-       email TEXT NOT NULL
-     , sftp BOOLEAN
-     , level INT
-     , requested TIMESTAMP
-     , approved TIMESTAMP
-     , PRIMARY KEY (email)
-     , CONSTRAINT FK_enclave_1 FOREIGN KEY (email)
-                  REFERENCES n3c_admin.registration (email) ON DELETE CASCADE ON UPDATE CASCADE
-     , CONSTRAINT FK_enclave_2 FOREIGN KEY (level)
-                  REFERENCES n3c_admin.access_level (level) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE n3c_admin.workstream (
+       label TEXT NOT NULL
+     , full_name TEXT
+     , description TEXT
+     , PRIMARY KEY (label)
 );
 
 CREATE TABLE n3c_admin.membership (

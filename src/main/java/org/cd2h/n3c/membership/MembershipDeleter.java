@@ -12,8 +12,8 @@ import javax.servlet.jsp.JspTagException;
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 import org.cd2h.n3c.N3CLoginTagLibBodyTagSupport;
-import org.cd2h.n3c.registration.Registration;
 import org.cd2h.n3c.workstream.Workstream;
+import org.cd2h.n3c.registration.Registration;
 
 @SuppressWarnings("serial")
 
@@ -29,20 +29,20 @@ public class MembershipDeleter extends N3CLoginTagLibBodyTagSupport {
     int rsCount = 0;
 
     public int doStartTag() throws JspException {
-		Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
-		if (theRegistration!= null)
-			parentEntities.addElement(theRegistration);
 		Workstream theWorkstream = (Workstream)findAncestorWithClass(this, Workstream.class);
 		if (theWorkstream!= null)
 			parentEntities.addElement(theWorkstream);
+		Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
+		if (theRegistration!= null)
+			parentEntities.addElement(theRegistration);
 
-		if (theRegistration == null) {
-		} else {
-			email = theRegistration.getEmail();
-		}
 		if (theWorkstream == null) {
 		} else {
 			label = theWorkstream.getLabel();
+		}
+		if (theRegistration == null) {
+		} else {
+			email = theRegistration.getEmail();
 		}
 
 

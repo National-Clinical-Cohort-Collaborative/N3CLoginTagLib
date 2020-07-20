@@ -32,6 +32,8 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
     String expertise = null;
     String therapeuticArea = null;
     String assistantEmail = null;
+    boolean enclave = false;
+    boolean workstreams = false;
     Date created = null;
     Date updated = null;
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();

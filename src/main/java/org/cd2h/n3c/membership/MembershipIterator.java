@@ -14,8 +14,8 @@ import javax.servlet.jsp.JspTagException;
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 import org.cd2h.n3c.N3CLoginTagLibBodyTagSupport;
-import org.cd2h.n3c.registration.Registration;
 import org.cd2h.n3c.workstream.Workstream;
+import org.cd2h.n3c.registration.Registration;
 
 @SuppressWarnings("serial")
 
@@ -35,36 +35,8 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
     String var = null;
     int rsCount = 0;
 
-   boolean useRegistration = false;
    boolean useWorkstream = false;
-
-	public static String membershipCountByRegistration(String email) throws JspTagException {
-		int count = 0;
-		MembershipIterator theIterator = new MembershipIterator();
-		try {
-			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from n3c_admin.membership where 1=1"
-						+ " and email = ?"
-						);
-
-			stat.setString(1,email);
-			ResultSet crs = stat.executeQuery();
-
-			if (crs.next()) {
-				count = crs.getInt(1);
-			}
-			stat.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error generating Membership iterator");
-		} finally {
-			theIterator.freeConnection();
-		}
-		return "" + count;
-	}
-
-	public static Boolean registrationHasMembership(String email) throws JspTagException {
-		return ! membershipCountByRegistration(email).equals("0");
-	}
+   boolean useRegistration = false;
 
 	public static String membershipCountByWorkstream(String label) throws JspTagException {
 		int count = 0;
@@ -94,6 +66,34 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 		return ! membershipCountByWorkstream(label).equals("0");
 	}
 
+	public static String membershipCountByRegistration(String email) throws JspTagException {
+		int count = 0;
+		MembershipIterator theIterator = new MembershipIterator();
+		try {
+			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from n3c_admin.membership where 1=1"
+						+ " and email = ?"
+						);
+
+			stat.setString(1,email);
+			ResultSet crs = stat.executeQuery();
+
+			if (crs.next()) {
+				count = crs.getInt(1);
+			}
+			stat.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new JspTagException("Error: JDBC error generating Membership iterator");
+		} finally {
+			theIterator.freeConnection();
+		}
+		return "" + count;
+	}
+
+	public static Boolean registrationHasMembership(String email) throws JspTagException {
+		return ! membershipCountByRegistration(email).equals("0");
+	}
+
 	public static Boolean membershipExists (String email, String label) throws JspTagException {
 		int count = 0;
 		MembershipIterator theIterator = new MembershipIterator();
@@ -120,17 +120,17 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 		return count > 0;
 	}
 
-	public static Boolean registrationWorkstreamExists (String email, String label) throws JspTagException {
+	public static Boolean workstreamRegistrationExists (String label, String email) throws JspTagException {
 		int count = 0;
 		MembershipIterator theIterator = new MembershipIterator();
 		try {
 			PreparedStatement stat = theIterator.getConnection().prepareStatement("SELECT count(*) from n3c_admin.membership where 1=1"
-						+ " and email = ?"
 						+ " and label = ?"
+						+ " and email = ?"
 						);
 
-			stat.setString(1,email);
-			stat.setString(2,label);
+			stat.setString(1,label);
+			stat.setString(2,email);
 			ResultSet crs = stat.executeQuery();
 
 			if (crs.next()) {
@@ -147,20 +147,20 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 	}
 
     public int doStartTag() throws JspException {
-		Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
-		if (theRegistration!= null)
-			parentEntities.addElement(theRegistration);
 		Workstream theWorkstream = (Workstream)findAncestorWithClass(this, Workstream.class);
 		if (theWorkstream!= null)
 			parentEntities.addElement(theWorkstream);
+		Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
+		if (theRegistration!= null)
+			parentEntities.addElement(theRegistration);
 
-		if (theRegistration == null) {
-		} else {
-			email = theRegistration.getEmail();
-		}
 		if (theWorkstream == null) {
 		} else {
 			label = theWorkstream.getLabel();
+		}
+		if (theRegistration == null) {
+		} else {
+			email = theRegistration.getEmail();
 		}
 
 
@@ -168,11 +168,11 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
             int webapp_keySeq = 1;
             stat = getConnection().prepareStatement("SELECT n3c_admin.membership.email, n3c_admin.membership.label from " + generateFromClause() + " where 1=1"
                                                         + generateJoinCriteria()
-                                                        + (email == null ? "" : " and email = ?")
                                                         + (label == null ? "" : " and label = ?")
+                                                        + (email == null ? "" : " and email = ?")
                                                         + " order by " + generateSortCriteria() + generateLimitCriteria());
-            if (email != null) stat.setString(webapp_keySeq++, email);
             if (label != null) stat.setString(webapp_keySeq++, label);
+            if (email != null) stat.setString(webapp_keySeq++, email);
             rs = stat.executeQuery();
 
             if (rs.next()) {
@@ -193,20 +193,20 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 
     private String generateFromClause() {
        StringBuffer theBuffer = new StringBuffer("n3c_admin.membership");
-       if (useRegistration)
-          theBuffer.append(", n3c_admin.registration");
        if (useWorkstream)
           theBuffer.append(", n3c_admin.workstream");
+       if (useRegistration)
+          theBuffer.append(", n3c_admin.registration");
 
       return theBuffer.toString();
     }
 
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
-       if (useRegistration)
-          theBuffer.append(" and registration.email = membership.null");
        if (useWorkstream)
           theBuffer.append(" and workstream.label = membership.null");
+       if (useRegistration)
+          theBuffer.append(" and registration.email = membership.null");
 
       return theBuffer.toString();
     }
@@ -295,20 +295,20 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
     }
 
 
-   public boolean getUseRegistration() {
-        return useRegistration;
-    }
-
-    public void setUseRegistration(boolean useRegistration) {
-        this.useRegistration = useRegistration;
-    }
-
    public boolean getUseWorkstream() {
         return useWorkstream;
     }
 
     public void setUseWorkstream(boolean useWorkstream) {
         this.useWorkstream = useWorkstream;
+    }
+
+   public boolean getUseRegistration() {
+        return useRegistration;
+    }
+
+    public void setUseRegistration(boolean useRegistration) {
+        this.useRegistration = useRegistration;
     }
 
 

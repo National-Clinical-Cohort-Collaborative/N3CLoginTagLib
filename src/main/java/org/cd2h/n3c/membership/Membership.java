@@ -10,8 +10,8 @@ import java.util.Date;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import org.cd2h.n3c.registration.Registration;
 import org.cd2h.n3c.workstream.Workstream;
+import org.cd2h.n3c.registration.Registration;
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 
@@ -34,20 +34,20 @@ public class Membership extends N3CLoginTagLibTagSupport {
 	public int doStartTag() throws JspException {
 		currentInstance = this;
 		try {
-			Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
-			if (theRegistration!= null)
-				parentEntities.addElement(theRegistration);
 			Workstream theWorkstream = (Workstream)findAncestorWithClass(this, Workstream.class);
 			if (theWorkstream!= null)
 				parentEntities.addElement(theWorkstream);
+			Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
+			if (theRegistration!= null)
+				parentEntities.addElement(theRegistration);
 
-			if (theRegistration == null) {
-			} else {
-				email = theRegistration.getEmail();
-			}
 			if (theWorkstream == null) {
 			} else {
 				label = theWorkstream.getLabel();
+			}
+			if (theRegistration == null) {
+			} else {
+				email = theRegistration.getEmail();
 			}
 
 			MembershipIterator theMembershipIterator = (MembershipIterator)findAncestorWithClass(this, MembershipIterator.class);
@@ -57,20 +57,20 @@ public class Membership extends N3CLoginTagLibTagSupport {
 				label = theMembershipIterator.getLabel();
 			}
 
-			if (theMembershipIterator == null && theRegistration == null && theWorkstream == null && email == null) {
+			if (theMembershipIterator == null && theWorkstream == null && theRegistration == null && email == null) {
 				// no email was provided - the default is to assume that it is a new Membership and to generate a new email
 				email = null;
 				log.debug("generating new Membership " + email);
 				insertEntity();
-			} else if (theMembershipIterator == null && theRegistration != null && theWorkstream == null) {
+			} else if (theMembershipIterator == null && theWorkstream != null && theRegistration == null) {
 				// an email was provided as an attribute - we need to load a Membership from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select label,joined from n3c_admin.membership where email = ?");
-				stmt.setString(1,email);
+				PreparedStatement stmt = getConnection().prepareStatement("select email,joined from n3c_admin.membership where label = ?");
+				stmt.setString(1,label);
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
-					if (label == null)
-						label = rs.getString(1);
+					if (email == null)
+						email = rs.getString(1);
 					if (joined == null)
 						joined = rs.getTimestamp(2);
 					found = true;
@@ -80,15 +80,15 @@ public class Membership extends N3CLoginTagLibTagSupport {
 				if (!found) {
 					insertEntity();
 				}
-			} else if (theMembershipIterator == null && theRegistration == null && theWorkstream != null) {
+			} else if (theMembershipIterator == null && theWorkstream == null && theRegistration != null) {
 				// an email was provided as an attribute - we need to load a Membership from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select email,joined from n3c_admin.membership where label = ?");
-				stmt.setString(1,label);
+				PreparedStatement stmt = getConnection().prepareStatement("select label,joined from n3c_admin.membership where email = ?");
+				stmt.setString(1,email);
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
-					if (email == null)
-						email = rs.getString(1);
+					if (label == null)
+						label = rs.getString(1);
 					if (joined == null)
 						joined = rs.getTimestamp(2);
 					found = true;
