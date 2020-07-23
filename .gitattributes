@@ -35,6 +35,7 @@ src/main/java/org/cd2h/n3c/registration/RegistrationInstitution.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationIterator.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationLastName.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationOfficialFirstName.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationOfficialFullName.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationOfficialLastName.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationOrcidId.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationSlackId.java -text
@@ -51,6 +52,7 @@ src/main/java/org/cd2h/n3c/workstream/WorkstreamIterator.java -text
 src/main/java/org/cd2h/n3c/workstream/WorkstreamLabel.java -text
 src/main/resources/META-INF/taglib.tld -text svneol=unset#application/xml
 src/non-packaged-resources/Model.clay -text svneol=unset#application/xml
+src/non-packaged-resources/palantir_views.sql -text
 src/non-packaged-resources/registration.sql -text
 src/test/java/org/cd2h/n3c/README.txt -text
 src/test/resources/README.txt -text
