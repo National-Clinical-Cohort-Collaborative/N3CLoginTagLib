@@ -84,9 +84,9 @@ SELECT
     organization.wikipedia_url
    FROM ror.organization
   WHERE (organization.name IN ( 
-  		SELECT registration.institution FROM n3c_admin.registration WHERE institution != ' NIH'
+  		SELECT registration.institution FROM n3c_admin.registration WHERE enclave and institution != ' NIH'
   		UNION
-  		SELECT nih_ic.title FROM nih_foa.nih_ic where nih_ic.ic IN (select substring(official_full_name from '/([^)]+)') FROM n3c_admin.registration WHERE institution = 'NIH')
+  		SELECT nih_ic.title FROM nih_foa.nih_ic where nih_ic.ic IN (select substring(official_full_name from '/([^)]+)') FROM n3c_admin.registration WHERE enclave and institution = 'NIH')
   		UNION
   		SELECT ror from n3c_admin.registration_remap
   		));
