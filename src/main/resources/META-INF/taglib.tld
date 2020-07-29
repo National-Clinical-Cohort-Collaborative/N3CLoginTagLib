@@ -128,6 +128,18 @@
 	</tag>
 
 	<tag>
+		<name>registrationOfficialInstitution</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationOfficialInstitution</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>officialInstitution</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>registrationFirstName</name>
 		<tag-class>org.cd2h.n3c.registration.RegistrationFirstName</tag-class>
 		<body-content>empty</body-content>
@@ -660,6 +672,12 @@
 		<name>registrationOfficialFullNameValue</name>
 		<function-class>org.cd2h.n3c.registration.Registration</function-class>
 		<function-signature>java.lang.String officialFullNameValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationOfficialInstitutionValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.String officialInstitutionValue()</function-signature>
 	</function>
 
 	<function>

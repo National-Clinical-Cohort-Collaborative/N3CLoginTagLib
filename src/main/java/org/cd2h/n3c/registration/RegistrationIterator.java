@@ -22,6 +22,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
     String officialFirstName = null;
     String officialLastName = null;
     String officialFullName = null;
+    String officialInstitution = null;
     String firstName = null;
     String lastName = null;
     String institution = null;

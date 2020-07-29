@@ -36,6 +36,7 @@ src/main/java/org/cd2h/n3c/registration/RegistrationIterator.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationLastName.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationOfficialFirstName.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationOfficialFullName.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationOfficialInstitution.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationOfficialLastName.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationOrcidId.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationSlackId.java -text

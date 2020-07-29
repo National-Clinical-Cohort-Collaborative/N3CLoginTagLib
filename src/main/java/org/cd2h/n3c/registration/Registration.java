@@ -29,6 +29,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 	String officialFirstName = null;
 	String officialLastName = null;
 	String officialFullName = null;
+	String officialInstitution = null;
 	String firstName = null;
 	String lastName = null;
 	String institution = null;
@@ -64,7 +65,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 			} else {
 				// an iterator or email was provided as an attribute - we need to load a Registration from the database
 				boolean found = false;
-				PreparedStatement stmt = getConnection().prepareStatement("select official_first_name,official_last_name,official_full_name,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,enclave,workstreams,created,updated from n3c_admin.registration where email = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("select official_first_name,official_last_name,official_full_name,official_institution,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,enclave,workstreams,created,updated from n3c_admin.registration where email = ?");
 				stmt.setString(1,email);
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
@@ -74,36 +75,38 @@ public class Registration extends N3CLoginTagLibTagSupport {
 						officialLastName = rs.getString(2);
 					if (officialFullName == null)
 						officialFullName = rs.getString(3);
+					if (officialInstitution == null)
+						officialInstitution = rs.getString(4);
 					if (firstName == null)
-						firstName = rs.getString(4);
+						firstName = rs.getString(5);
 					if (lastName == null)
-						lastName = rs.getString(5);
+						lastName = rs.getString(6);
 					if (institution == null)
-						institution = rs.getString(6);
+						institution = rs.getString(7);
 					if (orcidId == null)
-						orcidId = rs.getString(7);
+						orcidId = rs.getString(8);
 					if (gsuiteEmail == null)
-						gsuiteEmail = rs.getString(8);
+						gsuiteEmail = rs.getString(9);
 					if (slackId == null)
-						slackId = rs.getString(9);
+						slackId = rs.getString(10);
 					if (githubId == null)
-						githubId = rs.getString(10);
+						githubId = rs.getString(11);
 					if (twitterId == null)
-						twitterId = rs.getString(11);
+						twitterId = rs.getString(12);
 					if (expertise == null)
-						expertise = rs.getString(12);
+						expertise = rs.getString(13);
 					if (therapeuticArea == null)
-						therapeuticArea = rs.getString(13);
+						therapeuticArea = rs.getString(14);
 					if (assistantEmail == null)
-						assistantEmail = rs.getString(14);
+						assistantEmail = rs.getString(15);
 					if (enclave == false)
-						enclave = rs.getBoolean(15);
+						enclave = rs.getBoolean(16);
 					if (workstreams == false)
-						workstreams = rs.getBoolean(16);
+						workstreams = rs.getBoolean(17);
 					if (created == null)
-						created = rs.getTimestamp(17);
+						created = rs.getTimestamp(18);
 					if (updated == null)
-						updated = rs.getTimestamp(18);
+						updated = rs.getTimestamp(19);
 					found = true;
 				}
 				stmt.close();
@@ -125,26 +128,27 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		currentInstance = null;
 		try {
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.registration set official_first_name = ?, official_last_name = ?, official_full_name = ?, first_name = ?, last_name = ?, institution = ?, orcid_id = ?, gsuite_email = ?, slack_id = ?, github_id = ?, twitter_id = ?, expertise = ?, therapeutic_area = ?, assistant_email = ?, enclave = ?, workstreams = ?, created = ?, updated = ? where email = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.registration set official_first_name = ?, official_last_name = ?, official_full_name = ?, official_institution = ?, first_name = ?, last_name = ?, institution = ?, orcid_id = ?, gsuite_email = ?, slack_id = ?, github_id = ?, twitter_id = ?, expertise = ?, therapeutic_area = ?, assistant_email = ?, enclave = ?, workstreams = ?, created = ?, updated = ? where email = ?");
 				stmt.setString(1,officialFirstName);
 				stmt.setString(2,officialLastName);
 				stmt.setString(3,officialFullName);
-				stmt.setString(4,firstName);
-				stmt.setString(5,lastName);
-				stmt.setString(6,institution);
-				stmt.setString(7,orcidId);
-				stmt.setString(8,gsuiteEmail);
-				stmt.setString(9,slackId);
-				stmt.setString(10,githubId);
-				stmt.setString(11,twitterId);
-				stmt.setString(12,expertise);
-				stmt.setString(13,therapeuticArea);
-				stmt.setString(14,assistantEmail);
-				stmt.setBoolean(15,enclave);
-				stmt.setBoolean(16,workstreams);
-				stmt.setTimestamp(17,created == null ? null : new java.sql.Timestamp(created.getTime()));
-				stmt.setTimestamp(18,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
-				stmt.setString(19,email);
+				stmt.setString(4,officialInstitution);
+				stmt.setString(5,firstName);
+				stmt.setString(6,lastName);
+				stmt.setString(7,institution);
+				stmt.setString(8,orcidId);
+				stmt.setString(9,gsuiteEmail);
+				stmt.setString(10,slackId);
+				stmt.setString(11,githubId);
+				stmt.setString(12,twitterId);
+				stmt.setString(13,expertise);
+				stmt.setString(14,therapeuticArea);
+				stmt.setString(15,assistantEmail);
+				stmt.setBoolean(16,enclave);
+				stmt.setBoolean(17,workstreams);
+				stmt.setTimestamp(18,created == null ? null : new java.sql.Timestamp(created.getTime()));
+				stmt.setTimestamp(19,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
+				stmt.setString(20,email);
 				stmt.executeUpdate();
 				stmt.close();
 			}
@@ -166,6 +170,8 @@ public class Registration extends N3CLoginTagLibTagSupport {
 				officialLastName = "";
 			if (officialFullName == null)
 				officialFullName = "";
+			if (officialInstitution == null)
+				officialInstitution = "";
 			if (firstName == null)
 				firstName = "";
 			if (lastName == null)
@@ -188,26 +194,27 @@ public class Registration extends N3CLoginTagLibTagSupport {
 				therapeuticArea = "";
 			if (assistantEmail == null)
 				assistantEmail = "";
-			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.registration(email,official_first_name,official_last_name,official_full_name,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,enclave,workstreams,created,updated) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.registration(email,official_first_name,official_last_name,official_full_name,official_institution,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,enclave,workstreams,created,updated) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			stmt.setString(1,email);
 			stmt.setString(2,officialFirstName);
 			stmt.setString(3,officialLastName);
 			stmt.setString(4,officialFullName);
-			stmt.setString(5,firstName);
-			stmt.setString(6,lastName);
-			stmt.setString(7,institution);
-			stmt.setString(8,orcidId);
-			stmt.setString(9,gsuiteEmail);
-			stmt.setString(10,slackId);
-			stmt.setString(11,githubId);
-			stmt.setString(12,twitterId);
-			stmt.setString(13,expertise);
-			stmt.setString(14,therapeuticArea);
-			stmt.setString(15,assistantEmail);
-			stmt.setBoolean(16,enclave);
-			stmt.setBoolean(17,workstreams);
-			stmt.setTimestamp(18,created == null ? null : new java.sql.Timestamp(created.getTime()));
-			stmt.setTimestamp(19,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
+			stmt.setString(5,officialInstitution);
+			stmt.setString(6,firstName);
+			stmt.setString(7,lastName);
+			stmt.setString(8,institution);
+			stmt.setString(9,orcidId);
+			stmt.setString(10,gsuiteEmail);
+			stmt.setString(11,slackId);
+			stmt.setString(12,githubId);
+			stmt.setString(13,twitterId);
+			stmt.setString(14,expertise);
+			stmt.setString(15,therapeuticArea);
+			stmt.setString(16,assistantEmail);
+			stmt.setBoolean(17,enclave);
+			stmt.setBoolean(18,workstreams);
+			stmt.setTimestamp(19,created == null ? null : new java.sql.Timestamp(created.getTime()));
+			stmt.setTimestamp(20,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -279,6 +286,22 @@ public class Registration extends N3CLoginTagLibTagSupport {
 
 	public String getActualOfficialFullName () {
 		return officialFullName;
+	}
+
+	public String getOfficialInstitution () {
+		if (commitNeeded)
+			return "";
+		else
+			return officialInstitution;
+	}
+
+	public void setOfficialInstitution (String officialInstitution) {
+		this.officialInstitution = officialInstitution;
+		commitNeeded = true;
+	}
+
+	public String getActualOfficialInstitution () {
+		return officialInstitution;
 	}
 
 	public String getFirstName () {
@@ -551,6 +574,14 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		}
 	}
 
+	public static String officialInstitutionValue() throws JspException {
+		try {
+			return currentInstance.getOfficialInstitution();
+		} catch (Exception e) {
+			 throw new JspTagException("Error in tag function officialInstitutionValue()");
+		}
+	}
+
 	public static String firstNameValue() throws JspException {
 		try {
 			return currentInstance.getFirstName();
@@ -676,6 +707,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		officialFirstName = null;
 		officialLastName = null;
 		officialFullName = null;
+		officialInstitution = null;
 		firstName = null;
 		lastName = null;
 		institution = null;
