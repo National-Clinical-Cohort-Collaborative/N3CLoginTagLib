@@ -1,5 +1,5 @@
 CREATE VIEW palantir.n3c_user AS
-SELECT
+SELECT -- InCommon-federated
  	registration.email,
     registration.official_first_name,
     registration.official_last_name,
@@ -9,6 +9,8 @@ SELECT
     registration.orcid_id,
     registration.expertise,
     registration.therapeutic_area,
+    false as citizen_scientist,
+    false as international,
     registration.created,
     registration.updated
    FROM n3c_admin.registration
@@ -21,7 +23,7 @@ SELECT
   AND
   	institution NOT IN (SELECT incommon from n3c_admin.registration_remap)
 UNION
-SELECT
+SELECT -- InCommon-federated, but name mismatch
  	registration.email,
     registration.official_first_name,
     registration.official_last_name,
@@ -31,6 +33,8 @@ SELECT
     registration.orcid_id,
     registration.expertise,
     registration.therapeutic_area,
+    false as citizen_scientist,
+    false as international,
     registration.created,
     registration.updated
    FROM n3c_admin.registration, n3c_admin.registration_remap
@@ -39,7 +43,7 @@ SELECT
   AND
   	registration.institution = registration_remap.incommon
 UNION
-SELECT
+SELECT -- not InCommon-federated, but a ROR organization
  	registration.email,
     registration.official_first_name,
     registration.official_last_name,
@@ -49,17 +53,41 @@ SELECT
     registration.orcid_id,
     registration.expertise,
     registration.therapeutic_area,
+    false as citizen_scientist,
+    false as international,
     registration.created,
     registration.updated
-   FROM n3c_admin.registration, n3c_admin.registration_domain_remap, n3c_admin.feedout
+   FROM n3c_admin.registration, n3c_admin.registration_domain_remap, n3c_admin.site_master
   WHERE
   	registration.enclave
   AND
   	substring(email from '@(.*)$')=email_domain
   AND
-  	registration_domain_remap.ror=feedout.institutionid
+  	registration_domain_remap.ror=site_master.institutionid
 UNION
-SELECT
+SELECT -- citizen-scientist
+ 	registration.email,
+    registration.official_first_name,
+    registration.official_last_name,
+    registration.first_name,
+    registration.last_name,
+    null as institution,
+    registration.orcid_id,
+    registration.expertise,
+    registration.therapeutic_area,
+    true as citizen_scientist,
+    false as international,
+    registration.created,
+    registration.updated
+   FROM n3c_admin.registration, n3c_admin.citizen_master
+  WHERE
+  	registration.enclave
+  AND
+  	date_of_dua_signed is not null
+  AND
+  	registration.email=citizen_master.email_address
+UNION
+SELECT -- NIH personnel
  	registration.email,
     registration.official_first_name,
     registration.official_last_name,
@@ -69,6 +97,8 @@ SELECT
     registration.orcid_id,
     registration.expertise,
     registration.therapeutic_area,
+    false as citizen_scientist,
+    false as international,
     registration.created,
     registration.updated
    FROM n3c_admin.registration, nih_foa.nih_ic
@@ -113,3 +143,6 @@ SELECT
   		UNION
   		SELECT institutionname from n3c_admin.feedout,n3c_admin.registration_domain_remap where registration_domain_remap.ror=feedout.institutionid
   		));
+
+CREATE VIEW palantir.citizen_scientist AS
+SELECT * FROM n3c_admin.citizen_master;
