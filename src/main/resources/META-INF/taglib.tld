@@ -392,6 +392,54 @@
 	</tag>
 
 	<tag>
+		<name>registrationEmailed</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationEmailed</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>emailed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>registrationEmailedToNow</name>
+		<tag-class>org.cd2h.n3c.registration.RegistrationEmailedToNow</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>emailed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>foreachWorkstream</name>
 		<tag-class>org.cd2h.n3c.workstream.WorkstreamIterator</tag-class>
 		<body-content>JSP</body-content>
@@ -768,6 +816,12 @@
 		<name>registrationUpdatedValue</name>
 		<function-class>org.cd2h.n3c.registration.Registration</function-class>
 		<function-signature>java.lang.Date updatedValue()</function-signature>
+	</function>
+
+	<function>
+		<name>registrationEmailedValue</name>
+		<function-class>org.cd2h.n3c.registration.Registration</function-class>
+		<function-signature>java.lang.Date emailedValue()</function-signature>
 	</function>
 
 	<function>

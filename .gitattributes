@@ -26,6 +26,8 @@ src/main/java/org/cd2h/n3c/registration/RegistrationCreated.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationCreatedToNow.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationDeleter.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationEmail.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationEmailed.java -text
+src/main/java/org/cd2h/n3c/registration/RegistrationEmailedToNow.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationEnclave.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationExpertise.java -text
 src/main/java/org/cd2h/n3c/registration/RegistrationFirstName.java -text

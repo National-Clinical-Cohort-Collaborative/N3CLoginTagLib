@@ -38,6 +38,7 @@ public class RegistrationIterator extends N3CLoginTagLibBodyTagSupport {
     boolean workstreams = false;
     Date created = null;
     Date updated = null;
+    Date emailed = null;
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
 	private static final Log log =LogFactory.getLog(Registration.class);

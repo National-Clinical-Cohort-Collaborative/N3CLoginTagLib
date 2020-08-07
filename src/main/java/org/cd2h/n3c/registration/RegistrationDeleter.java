@@ -36,6 +36,7 @@ public class RegistrationDeleter extends N3CLoginTagLibBodyTagSupport {
     boolean workstreams = false;
     Date created = null;
     Date updated = null;
+    Date emailed = null;
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
 
