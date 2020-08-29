@@ -1,6 +1,8 @@
 CREATE VIEW palantir.n3c_user AS
 SELECT *,'InCommon' AS una_path from n3c_admin.staging_user_incommon
 UNION
+SELECT *,'InCommon' AS una_path from n3c_admin.staging_user_incommon_mismatch
+UNION
 SELECT *,'login.gov' AS una_path from n3c_admin.staging_user_non_incommon
 UNION
 SELECT *,'login.gov' AS una_path from n3c_admin.staging_user_citizen
