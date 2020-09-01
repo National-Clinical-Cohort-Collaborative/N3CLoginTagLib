@@ -1,3 +1,9 @@
+create view n3c_admin.dua_status as
+select distinct institutionid,official_institution,name,duaexecuted from ror.organization,n3c_admin.registration,n3c_admin.site_master where name=official_institution and institutionid=id
+union
+select distinct institutionid,official_institution,name,duaexecuted from ror.organization,n3c_admin.registration_remap,n3c_admin.registration,n3c_admin.site_master where incommon=official_institution and ror=name and institutionid=id
+;
+
 CREATE VIEW n3c_admin.staging_user_incommon AS
 SELECT -- InCommon-federated
  	registration.email,
