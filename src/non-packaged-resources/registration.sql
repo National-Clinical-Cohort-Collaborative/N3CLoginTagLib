@@ -2,7 +2,6 @@ CREATE TABLE n3c_admin.registration (
        email TEXT NOT NULL
      , official_first_name TEXT
      , official_last_name TEXT
-     , official_full_name TEXT
      , first_name TEXT
      , last_name TEXT
      , institution TEXT
@@ -18,6 +17,9 @@ CREATE TABLE n3c_admin.registration (
      , workstreams BOOLEAN
      , created TIMESTAMP
      , updated TIMESTAMP
+     , official_full_name TEXT
+     , official_institution text
+     , emailed TIMESTAMP
      , PRIMARY KEY (email)
 );
 
