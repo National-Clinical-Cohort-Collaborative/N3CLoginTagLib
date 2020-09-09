@@ -161,3 +161,31 @@ FROM ror.organization,n3c_admin.registration_remap,n3c_admin.registration,n3c_ad
 WHERE incommon=official_institution
   AND ror=name and institutionid=id
 ;
+
+create view user_org_map as
+select 
+    email,
+    id as ror_id,
+    official_institution as ror_name
+from n3c_admin.registration left outer join ror.organization
+  on official_institution = name
+where official_institution  not in (select incommon from registration_remap)
+  and id in (select institutionid from n3c_admin.dua_master)
+union
+select 
+    email,
+    id as ror_id,
+    official_institution as ror_name
+from n3c_admin.registration left outer join ror.organization
+  on official_institution = name
+where official_institution  not in (select incommon from registration_remap)
+  and official_institution not in (select institutionname from n3c_admin.dua_master)
+union
+select 
+    email,
+    id as ror_id,
+    name as ror_name
+from n3c_admin.registration, n3c_admin.registration_remap, ror.organization
+where registration.official_institution = incommon
+  and ror = name
+;
