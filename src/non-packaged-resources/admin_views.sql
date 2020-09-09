@@ -112,7 +112,7 @@ SELECT -- NIH personnel
    FROM n3c_admin.registration, nih_foa.nih_ic
 where
 	registration.enclave
-and	institution='NIH'
+and	email~'nih.gov$'
 and substring(official_full_name from '/([^)]+)') = nih_ic.ic;
 
 CREATE VIEW n3c_admin.user_stats AS
@@ -162,30 +162,110 @@ WHERE incommon=official_institution
   AND ror=name and institutionid=id
 ;
 
-create view user_org_map as
-select 
+create view n3c_admin.user_org_map_step1 as
+select  -- standard InCommon connection listed in DUA master
     email,
     id as ror_id,
     official_institution as ror_name
-from n3c_admin.registration left outer join ror.organization
-  on official_institution = name
-where official_institution  not in (select incommon from registration_remap)
+from n3c_admin.registration,ror.organization
+where official_institution = name
+  and official_institution  not in (select incommon from n3c_admin.registration_remap)
   and id in (select institutionid from n3c_admin.dua_master)
 union
-select 
-    email,
-    id as ror_id,
-    official_institution as ror_name
-from n3c_admin.registration left outer join ror.organization
-  on official_institution = name
-where official_institution  not in (select incommon from registration_remap)
-  and official_institution not in (select institutionname from n3c_admin.dua_master)
-union
-select 
+select  -- remapped InCommon connection
     email,
     id as ror_id,
     name as ror_name
 from n3c_admin.registration, n3c_admin.registration_remap, ror.organization
 where registration.official_institution = incommon
   and ror = name
+;
+
+create view n3c_admin.user_org_map as
+select * from n3c_admin.user_org_map_step1
+union
+select   -- standard InCommon connection not in DUA master
+    email,
+    id as ror_id,
+    official_institution as ror_name
+from n3c_admin.registration,ror.organization
+where official_institution = name
+  and official_institution  not in (select ror_name from n3c_admin.user_org_map_step1)
+union
+select
+	email,
+	institutionid as ror_id,
+	institutionname as ror_name
+from n3c_admin.registration,n3c_admin.dua_master
+ where email ~ institutionid
+union
+select
+	email,
+	id as ror_id,
+	name as ror_name
+from n3c_admin.registration,nih_foa.nih_ic,ror.organization
+where email~'nih.gov$'
+  and substring(official_full_name from '/([^)]+)') = nih_ic.ic
+  and nih_ic.title = organization.name
+  and country_code = 'US'
+;
+
+create view n3c_admin.staging_membership as
+select email, analytics, governance, harmonization, implementation, phenotype, synthetic
+from registration
+natural left join
+(select email,joined as analytics from membership where label='analytics') as t1
+natural left join
+(select email,joined as governance from membership where label='governance') as t2
+natural left join
+(select email,joined as harmonization from membership where label='harmonization') as t3
+natural left join
+(select email,joined as implementation from membership where label='implementation') as t4
+natural left join
+(select email,joined as phenotype from membership where label='phenotype') as t5
+natural left join
+(select email,joined as synthetic from membership where label='synthetic') as t6
+;
+
+create view n3c_admin.gsuite_view as
+select
+	registration.email,
+	official_first_name,
+	official_last_name,
+	first_name,
+	last_name,
+	coalesce(ror_id,'') as ror_id,
+	coalesce(ror_name,'') as ror_name,
+	coalesce(duaexecuted,'') as dua_executed,
+	orcid_id,
+	gsuite_email,
+	slack_id,
+	github_id,
+	twitter_id,
+	expertise,
+	therapeutic_area,
+	assistant_email,
+	case when enclave then 'TRUE' else 'FALSE' end as enclave,
+	case when workstreams then 'TRUE' else 'FALSE' end as workstreams,
+	created,
+	updated,
+	official_full_name,
+	official_institution,
+	coalesce(emailed::text,'') as emailed,
+	coalesce(governance::text,'') as governance,
+	coalesce(phenotype::text,'') as phenotype,
+	coalesce(harmonization::text,'') as harmonization,
+	coalesce(analytics::text,'') as analytics,
+	coalesce(synthetic::text,'') as synthetic,
+	coalesce(implementation::text,'') as implementation
+from
+(	n3c_admin.registration natural join n3c_admin.staging_membership
+left outer join
+	n3c_admin.user_org_map
+on registration.email=user_org_map.email
+)
+left outer join
+	n3c_admin.dua_master
+on ror_id = institutionid
+order by last_name,first_name
 ;
