@@ -113,7 +113,7 @@ SELECT -- NIH personnel
 where
 	registration.enclave
 and	email~'nih.gov$'
-and substring(official_full_name from '/([^)]+)') = nih_ic.ic;
+and substring(official_full_name from '/([^/)]+)') = nih_ic.ic;
 
 CREATE VIEW n3c_admin.user_stats AS
 SELECT
