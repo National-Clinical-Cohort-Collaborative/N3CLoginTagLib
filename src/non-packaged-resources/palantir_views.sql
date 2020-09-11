@@ -29,13 +29,25 @@ SELECT
 
 CREATE VIEW palantir.n3c_organization AS
 SELECT
+	institutionid as id,
+	institutionname as name,
+	duaexecuted as dua_signed,
+	duacontactfirstname as contact_first_name,
+	duacontactsurname as contact_last_name,
+	duacontactrole as contact_role,
+	duacontactemail as contact_email
+FROM n3c_admin.dua_master
+;
+
+CREATE VIEW palantir.n3c_organization AS
+SELECT
  	organization.id,
     organization.name,
     duaexecuted as dua_signed,
     organization.wikipedia_url
-   FROM ror.organization, n3c_admin.site_master
+   FROM ror.organization, n3c_admin.dua_master
   WHERE (
-  	organization.id = site_master.institutionid
+  	organization.id = dua_master.institutionid
   AND
   	organization.name IN ( 
   		SELECT registration.institution FROM n3c_admin.registration WHERE enclave and official_institution != ' NIH'
@@ -44,7 +56,7 @@ SELECT
   		UNION
   		SELECT ror from n3c_admin.registration_remap
   		UNION
-  		SELECT institutionname from n3c_admin.site_master,n3c_admin.registration_domain_remap where registration_domain_remap.ror=site_master.institutionid
+  		SELECT institutionname from n3c_admin.dua_master,n3c_admin.registration_domain_remap where registration_domain_remap.ror=dua_master.institutionid
   		));
 
 CREATE VIEW palantir.citizen_scientist AS

@@ -13,15 +13,13 @@ SELECT -- InCommon-federated
     false as international,
     registration.created,
     registration.updated
-   FROM n3c_admin.registration
-  WHERE
-  	registration.enclave
-  AND
-  	institution != 'NIH'
-  AND
-  	(official_institution is null OR official_institution != 'login.gov')
-  AND
-  	institution NOT IN (SELECT incommon from n3c_admin.registration_remap)
+FROM n3c_admin.registration
+WHERE registration.enclave
+  AND institution != 'NIH'
+  AND official_institution != ''
+  AND official_institution is not null
+  AND official_institution != 'login.gov'
+  AND official_institution NOT IN (SELECT incommon from n3c_admin.registration_remap)
 ;
 
 CREATE VIEW n3c_admin.staging_user_incommon_mismatch AS
@@ -43,7 +41,7 @@ SELECT -- InCommon-federated, but name mismatch
   WHERE
   	registration.enclave
   AND
-  	registration.institution = registration_remap.incommon
+  	registration.official_institution = registration_remap.incommon
 ;
 
 CREATE VIEW n3c_admin.staging_user_non_incommon AS
@@ -61,13 +59,13 @@ SELECT -- not InCommon-federated, but a ROR organization
     false as international,
     registration.created,
     registration.updated
-   FROM n3c_admin.registration, n3c_admin.registration_domain_remap, n3c_admin.site_master
+   FROM n3c_admin.registration, n3c_admin.registration_domain_remap, n3c_admin.dua_master
   WHERE
   	registration.enclave
   AND
   	substring(email from '@(.*)$')=email_domain
   AND
-  	registration_domain_remap.ror=site_master.institutionid
+  	registration_domain_remap.ror=dua_master.institutionid
 ;
 
 CREATE VIEW n3c_admin.staging_user_citizen AS
@@ -148,7 +146,7 @@ SELECT DISTINCT
 	official_institution,
 	name,
 	duaexecuted
-FROM ror.organization,n3c_admin.registration,n3c_admin.site_master
+FROM ror.organization,n3c_admin.registration,n3c_admin.dua_master
 WHERE name=official_institution
   AND institutionid=id
 UNION
@@ -157,7 +155,7 @@ SELECT DISTINCT
 	official_institution,
 	name,
 	duaexecuted
-FROM ror.organization,n3c_admin.registration_remap,n3c_admin.registration,n3c_admin.site_master
+FROM ror.organization,n3c_admin.registration_remap,n3c_admin.registration,n3c_admin.dua_master
 WHERE incommon=official_institution
   AND ror=name and institutionid=id
 ;
