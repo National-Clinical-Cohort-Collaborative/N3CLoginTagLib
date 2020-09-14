@@ -1,13 +1,23 @@
 CREATE VIEW palantir.n3c_user AS
-SELECT *,'InCommon' AS una_path from n3c_admin.staging_user_incommon
-UNION
-SELECT *,'InCommon' AS una_path from n3c_admin.staging_user_incommon_mismatch
-UNION
-SELECT *,'login.gov' AS una_path from n3c_admin.staging_user_non_incommon
-UNION
-SELECT *,'login.gov' AS una_path from n3c_admin.staging_user_citizen
-UNION
-SELECT *,'NIH' AS una_path from n3c_admin.staging_user_nih
+SELECT
+    email,
+    official_first_name,
+    official_last_name,
+    first_name,
+    last_name,
+    ror_id,
+    ror_name,
+    orcid_id,
+    expertise,
+    therapeutic_area,
+    false as citizen_scientist,
+    false as international,
+    created,
+    updated,
+    una_path
+FROM n3c_admin.gsuite_view
+WHERE enclave = 'TRUE'
+  AND ror_id IN (SELECT institutionid from n3c_admin.dua_master)
 ;
 
 CREATE VIEW palantir.n3c_organization_lax AS
@@ -35,7 +45,11 @@ SELECT
 	duacontactfirstname as contact_first_name,
 	duacontactsurname as contact_last_name,
 	duacontactrole as contact_role,
-	duacontactemail as contact_email
+	duacontactemail as contact_email,
+    signatoryfirst as signatory_first_name,
+    signatorylast as signatory_last_name,
+    signatoryrole as signatory_role,
+    signatoryemail as signatory_email
 FROM n3c_admin.dua_master
 ;
 

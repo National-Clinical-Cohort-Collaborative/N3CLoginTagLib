@@ -180,30 +180,36 @@ where registration.official_institution = incommon
 ;
 
 create view n3c_admin.user_org_map as
-select * from n3c_admin.user_org_map_step1
+select
+    *,
+    'InCommon' AS una_path
+from n3c_admin.user_org_map_step1
 union
 select   -- standard InCommon connection not in DUA master
     email,
     id as ror_id,
-    official_institution as ror_name
+    official_institution as ror_name,
+    'InCommon' AS una_path
 from n3c_admin.registration,ror.organization
 where official_institution = name
-  and official_institution  not in (select ror_name from n3c_admin.user_org_map_step1)
+  and email  not in (select email from n3c_admin.user_org_map_step1)
 union
 select
 	email,
 	institutionid as ror_id,
-	institutionname as ror_name
+	institutionname as ror_name,
+	'login.gov' AS una_path
 from n3c_admin.registration,n3c_admin.dua_master
  where email ~ institutionid
 union
 select
 	email,
 	id as ror_id,
-	name as ror_name
+	name as ror_name,
+	'NIH' AS una_path
 from n3c_admin.registration,nih_foa.nih_ic,ror.organization
 where email~'nih.gov$'
-  and substring(official_full_name from '/([^)]+)') = nih_ic.ic
+  and substring(official_full_name from '/([^/)]+)') = nih_ic.ic
   and nih_ic.title = organization.name
   and country_code = 'US'
 ;
@@ -235,6 +241,7 @@ select
 	coalesce(ror_id,'') as ror_id,
 	coalesce(ror_name,'') as ror_name,
 	coalesce(duaexecuted,'') as dua_executed,
+	una_path,
 	orcid_id,
 	gsuite_email,
 	slack_id,
@@ -264,6 +271,21 @@ on registration.email=user_org_map.email
 )
 left outer join
 	n3c_admin.dua_master
+on ror_id = institutionid
+order by last_name,first_name
+;
+
+create view n3c_admin.gsuite_new as
+select
+    *
+from
+(   n3c_admin.registration natural join n3c_admin.staging_membership
+left outer join
+    n3c_admin.user_org_map
+on registration.email=user_org_map.email
+)
+left outer join
+    n3c_admin.dua_master
 on ror_id = institutionid
 order by last_name,first_name
 ;
