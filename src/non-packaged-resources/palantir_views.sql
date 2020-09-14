@@ -49,7 +49,8 @@ SELECT
     signatoryfirst as signatory_first_name,
     signatorylast as signatory_last_name,
     signatoryrole as signatory_role,
-    signatoryemail as signatory_email
+    signatoryemail as signatory_email,
+    durcontact as dur_contact
 FROM n3c_admin.dua_master
 ;
 
