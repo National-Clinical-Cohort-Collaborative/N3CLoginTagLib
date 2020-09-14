@@ -199,8 +199,9 @@ select
 	institutionid as ror_id,
 	institutionname as ror_name,
 	'login.gov' AS una_path
-from n3c_admin.registration,n3c_admin.dua_master
- where email ~ institutionid
+from n3c_admin.registration,n3c_admin.registration_domain_remap,n3c_admin.dua_master
+ where email ~ email_domain
+   and ror = institutionid
 union
 select
 	email,
@@ -211,6 +212,18 @@ from n3c_admin.registration,nih_foa.nih_ic,ror.organization
 where email~'nih.gov$'
   and substring(official_full_name from '/([^/)]+)') = nih_ic.ic
   and nih_ic.title = organization.name
+  and country_code = 'US'
+union
+select
+	email,
+	id as ror_id,
+	name as ror_name,
+	'NIH' AS una_path
+from n3c_admin.registration,nih_foa.nih_ic,n3c_admin.registration_remap,ror.organization
+where email~'nih.gov$'
+  and substring(official_full_name from '/([^/)]+)') = nih_ic.ic
+  and nih_ic.title = incommon
+  and ror = organization.name
   and country_code = 'US'
 ;
 
