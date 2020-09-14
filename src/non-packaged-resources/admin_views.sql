@@ -287,18 +287,3 @@ left outer join
 on ror_id = institutionid
 order by last_name,first_name
 ;
-
-create view n3c_admin.gsuite_new as
-select
-    *
-from
-(   n3c_admin.registration natural join n3c_admin.staging_membership
-left outer join
-    n3c_admin.user_org_map
-on registration.email=user_org_map.email
-)
-left outer join
-    n3c_admin.dua_master
-on ror_id = institutionid
-order by last_name,first_name
-;
