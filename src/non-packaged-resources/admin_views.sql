@@ -251,9 +251,9 @@ select
 	official_last_name,
 	first_name,
 	last_name,
-	coalesce(ror_id,'') as ror_id,
-	coalesce(ror_name,'') as ror_name,
-	coalesce(duaexecuted,'') as dua_executed,
+	ror_id,
+	ror_name,
+	dua_executed,
 	una_path,
 	orcid_id,
 	gsuite_email,
@@ -269,13 +269,13 @@ select
 	updated,
 	official_full_name,
 	official_institution,
-	coalesce(emailed::text,'') as emailed,
-	coalesce(governance::text,'') as governance,
-	coalesce(phenotype::text,'') as phenotype,
-	coalesce(harmonization::text,'') as harmonization,
-	coalesce(analytics::text,'') as analytics,
-	coalesce(synthetic::text,'') as synthetic,
-	coalesce(implementation::text,'') as implementation
+	emailed,
+	governance,
+	phenotype,
+	harmonization,
+	analytics,
+	synthetic,
+	implementation
 from
 (	n3c_admin.registration natural join n3c_admin.staging_membership
 left outer join
