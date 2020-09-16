@@ -208,23 +208,10 @@ select
 	id as ror_id,
 	name as ror_name,
 	'NIH' AS una_path
-from n3c_admin.registration,nih_foa.nih_ic,ror.organization
+from n3c_admin.registration,n3c_admin.registration_remap_nih,ror.organization
 where email~'nih.gov$'
-  and substring(official_full_name from '/([^/)]+)') = nih_ic.ic
-  and nih_ic.title = organization.name
-  and country_code = 'US'
-union
-select
-	email,
-	id as ror_id,
-	name as ror_name,
-	'NIH' AS una_path
-from n3c_admin.registration,nih_foa.nih_ic,n3c_admin.registration_remap,ror.organization
-where email~'nih.gov$'
-  and substring(official_full_name from '/([^/)]+)') = nih_ic.ic
-  and nih_ic.title = incommon
-  and ror = organization.name
-  and country_code = 'US'
+  and substring(official_full_name from '/([^/)]+)') = registration_remap_nih.ic
+  and registration_remap_nih.ror_id = organization.id
 ;
 
 create view n3c_admin.staging_membership as
@@ -253,7 +240,7 @@ select
 	last_name,
 	ror_id,
 	ror_name,
-	dua_executed,
+	duaexecuted as dua_executed,
 	una_path,
 	orcid_id,
 	gsuite_email,
