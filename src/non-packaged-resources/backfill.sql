@@ -31,10 +31,32 @@ where email_address not in (select email_address from simple2)
 ;
 
 create view staging_match as
-select
-	email_address,
-	email
-from simple2;
+select distinct
+	registration.email,
+    official_first_name,
+    official_last_name,
+    registration.first_name,
+    registration.last_name,
+    institution,
+    case when registration.orcid_id != '' then registration.orcid_id else onboard_master.orcid_id end as orcid_id,
+    case when registration.gsuite_email != '' then registration.gsuite_email else onboard_master.google__g_suite_enabled_email_ end as gsuite_email,
+    case when registration.slack_id != '' then registration.slack_id else onboard_master.slack_email_harmonized__ end as slack_id,
+    case when registration.github_id != '' then registration.github_id else onboard_master.github_handle end as github_id,
+    case when registration.twitter_id != '' then registration.twitter_id else onboard_master.twitter_handle end as twitter_id,
+    expertise,
+    therapeutic_area,
+    registration.assistant_email,
+    enclave,
+    workstreams,
+    created,
+    updated,
+    official_full_name,
+    official_institution,
+    emailed
+from registration,simple2,onboard_master
+where registration.email = simple2.email
+  and simple2.email_address = onboard_master.email_address
+;
 
 create view staging_no_match as
 select
