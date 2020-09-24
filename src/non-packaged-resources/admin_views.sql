@@ -204,6 +204,15 @@ from n3c_admin.registration,n3c_admin.registration_domain_remap,n3c_admin.dua_ma
    and ror = institutionid
 union
 select
+	registration.email,
+	institutionid as ror_id,
+	institutionname as ror_name,
+	'login.gov' AS una_path
+from n3c_admin.registration,n3c_admin.registration_remap_email,n3c_admin.dua_master
+ where registration.email = registration_remap_email.email
+   and ror_id = institutionid
+union
+select
 	email,
 	id as ror_id,
 	name as ror_name,
