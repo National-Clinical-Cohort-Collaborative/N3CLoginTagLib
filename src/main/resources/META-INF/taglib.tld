@@ -686,6 +686,379 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>foreachProject</name>
+		<tag-class>org.cd2h.n3c.project.ProjectIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>project</name>
+		<tag-class>org.cd2h.n3c.project.Project</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteProject</name>
+		<tag-class>org.cd2h.n3c.project.ProjectDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>projectEmail</name>
+		<tag-class>org.cd2h.n3c.project.ProjectEmail</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>projectUid</name>
+		<tag-class>org.cd2h.n3c.project.ProjectUid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>projectTitle</name>
+		<tag-class>org.cd2h.n3c.project.ProjectTitle</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>title</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>projectResearchStatement</name>
+		<tag-class>org.cd2h.n3c.project.ProjectResearchStatement</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>researchStatement</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>projectDomainTeam</name>
+		<tag-class>org.cd2h.n3c.project.ProjectDomainTeam</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>domainTeam</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>projectAccessingInstitution</name>
+		<tag-class>org.cd2h.n3c.project.ProjectAccessingInstitution</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>accessingInstitution</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachDomainTeam</name>
+		<tag-class>org.cd2h.n3c.domainTeam.DomainTeamIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>domainTeam</name>
+		<tag-class>org.cd2h.n3c.domainTeam.DomainTeam</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteDomainTeam</name>
+		<tag-class>org.cd2h.n3c.domainTeam.DomainTeamDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>domainTeamNid</name>
+		<tag-class>org.cd2h.n3c.domainTeam.DomainTeamNid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>domainTeamVid</name>
+		<tag-class>org.cd2h.n3c.domainTeam.DomainTeamVid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>vid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>domainTeamTitle</name>
+		<tag-class>org.cd2h.n3c.domainTeam.DomainTeamTitle</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>title</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>foreachBinding</name>
+		<tag-class>org.cd2h.n3c.binding.BindingIterator</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>sortCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>limitCriteria</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useProject</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>useDomainTeam</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+	<tag>
+		<name>binding</name>
+		<tag-class>org.cd2h.n3c.binding.Binding</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>deleteBinding</name>
+		<tag-class>org.cd2h.n3c.binding.BindingDeleter</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>bindingEmail</name>
+		<tag-class>org.cd2h.n3c.binding.BindingEmail</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>email</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>bindingUid</name>
+		<tag-class>org.cd2h.n3c.binding.BindingUid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>uid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>bindingNid</name>
+		<tag-class>org.cd2h.n3c.binding.BindingNid</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>nid</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
 	<function>
 		<name>registrationCount</name>
 		<function-class>org.cd2h.n3c.registration.RegistrationIterator</function-class>
@@ -906,5 +1279,143 @@
 		<name>membershipJoinedValue</name>
 		<function-class>org.cd2h.n3c.membership.Membership</function-class>
 		<function-signature>java.lang.Date joinedValue()</function-signature>
+	</function>
+
+	<function>
+		<name>projectExists</name>
+		<function-class>org.cd2h.n3c.project.ProjectIterator</function-class>
+		<function-signature>java.lang.String projectExists(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>projectCountByRegistration</name>
+		<function-class>org.cd2h.n3c.project.ProjectIterator</function-class>
+		<function-signature>java.lang.String projectCountByRegistration(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>registrationHasProject</name>
+		<function-class>org.cd2h.n3c.project.ProjectIterator</function-class>
+		<function-signature>java.lang.Boolean registrationHasProject(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>projectEmailValue</name>
+		<function-class>org.cd2h.n3c.project.Project</function-class>
+		<function-signature>java.lang.String emailValue()</function-signature>
+	</function>
+
+	<function>
+		<name>projectUidValue</name>
+		<function-class>org.cd2h.n3c.project.Project</function-class>
+		<function-signature>java.lang.String uidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>projectTitleValue</name>
+		<function-class>org.cd2h.n3c.project.Project</function-class>
+		<function-signature>java.lang.String titleValue()</function-signature>
+	</function>
+
+	<function>
+		<name>projectResearchStatementValue</name>
+		<function-class>org.cd2h.n3c.project.Project</function-class>
+		<function-signature>java.lang.String researchStatementValue()</function-signature>
+	</function>
+
+	<function>
+		<name>projectDomainTeamValue</name>
+		<function-class>org.cd2h.n3c.project.Project</function-class>
+		<function-signature>java.lang.Boolean domainTeamValue()</function-signature>
+	</function>
+
+	<function>
+		<name>projectAccessingInstitutionValue</name>
+		<function-class>org.cd2h.n3c.project.Project</function-class>
+		<function-signature>java.lang.String accessingInstitutionValue()</function-signature>
+	</function>
+
+	<function>
+		<name>domainTeamCount</name>
+		<function-class>org.cd2h.n3c.domainTeam.DomainTeamIterator</function-class>
+		<function-signature>java.lang.String domainTeamCount()</function-signature>
+	</function>
+
+	<function>
+		<name>domainTeamExists</name>
+		<function-class>org.cd2h.n3c.domainTeam.DomainTeamIterator</function-class>
+		<function-signature>java.lang.String domainTeamExists(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>domainTeamNidValue</name>
+		<function-class>org.cd2h.n3c.domainTeam.DomainTeam</function-class>
+		<function-signature>java.lang.Integer nidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>domainTeamVidValue</name>
+		<function-class>org.cd2h.n3c.domainTeam.DomainTeam</function-class>
+		<function-signature>java.lang.Integer vidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>domainTeamTitleValue</name>
+		<function-class>org.cd2h.n3c.domainTeam.DomainTeam</function-class>
+		<function-signature>java.lang.String titleValue()</function-signature>
+	</function>
+
+	<function>
+		<name>bindingExists</name>
+		<function-class>org.cd2h.n3c.binding.BindingIterator</function-class>
+		<function-signature>java.lang.String bindingExists(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>bindingCountByProject</name>
+		<function-class>org.cd2h.n3c.binding.BindingIterator</function-class>
+		<function-signature>java.lang.String bindingCountByProject(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>projectHasBinding</name>
+		<function-class>org.cd2h.n3c.binding.BindingIterator</function-class>
+		<function-signature>java.lang.Boolean projectHasBinding(java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>bindingCountByDomainTeam</name>
+		<function-class>org.cd2h.n3c.binding.BindingIterator</function-class>
+		<function-signature>java.lang.String bindingCountByDomainTeam(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>domainTeamHasBinding</name>
+		<function-class>org.cd2h.n3c.binding.BindingIterator</function-class>
+		<function-signature>java.lang.Boolean domainTeamHasBinding(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>projectDomainTeamExists</name>
+		<function-class>org.cd2h.n3c.binding.BindingIterator</function-class>
+		<function-signature>java.lang.Boolean projectDomainTeamExists(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>bindingEmailValue</name>
+		<function-class>org.cd2h.n3c.binding.Binding</function-class>
+		<function-signature>java.lang.String emailValue()</function-signature>
+	</function>
+
+	<function>
+		<name>bindingUidValue</name>
+		<function-class>org.cd2h.n3c.binding.Binding</function-class>
+		<function-signature>java.lang.String uidValue()</function-signature>
+	</function>
+
+	<function>
+		<name>bindingNidValue</name>
+		<function-class>org.cd2h.n3c.binding.Binding</function-class>
+		<function-signature>java.lang.Integer nidValue()</function-signature>
 	</function>
 </taglib>
