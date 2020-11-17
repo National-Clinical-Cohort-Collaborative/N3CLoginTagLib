@@ -200,7 +200,7 @@ select
 	institutionname as ror_name,
 	'login.gov' AS una_path
 from n3c_admin.registration,n3c_admin.registration_domain_remap,n3c_admin.dua_master
- where email ~ email_domain
+ where substring(email from '@(.*)$')=email_domain
    and ror = institutionid
 union
 select
