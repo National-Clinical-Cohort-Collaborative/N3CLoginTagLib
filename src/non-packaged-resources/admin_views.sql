@@ -182,6 +182,8 @@ where registration.official_institution = incommon
 create view n3c_admin.user_org_map as
 select
     *,
+	false as citizen_scientist,
+	false as international,
     'InCommon' AS una_path
 from n3c_admin.user_org_map_step1
 union
@@ -189,6 +191,8 @@ select   -- standard InCommon connection not in DUA master
     email,
     id as ror_id,
     official_institution as ror_name,
+	false as citizen_scientist,
+	false as international,
     'InCommon' AS una_path
 from n3c_admin.registration,ror.organization
 where official_institution = name
@@ -198,6 +202,8 @@ select
 	email,
 	institutionid as ror_id,
 	institutionname as ror_name,
+	false as citizen_scientist,
+	false as international,
 	'InCommon' AS una_path
 from n3c_admin.registration,n3c_admin.registration_domain_remap,n3c_admin.dua_master
  where substring(email from '@(.*)$')=email_domain
@@ -210,6 +216,8 @@ select
 	email,
 	institutionid as ror_id,
 	institutionname as ror_name,
+	false as citizen_scientist,
+	false as international,
 	official_institution AS una_path
 from n3c_admin.registration,n3c_admin.registration_domain_remap,n3c_admin.dua_master
  where substring(email from '@(.*)$')=email_domain
@@ -222,6 +230,8 @@ select
 	registration.email,
 	institutionid as ror_id,
 	institutionname as ror_name,
+	false as citizen_scientist,
+	false as international,
 	'login.gov' AS una_path
 from n3c_admin.registration,n3c_admin.registration_remap_email,n3c_admin.dua_master
  where registration.email = registration_remap_email.email
@@ -233,6 +243,8 @@ select
 	email,
 	id as ror_id,
 	name as ror_name,
+	false as citizen_scientist,
+	false as international,
 	'NIH' AS una_path
 from n3c_admin.registration,n3c_admin.registration_remap_nih,ror.organization
 where email~'nih.gov$'
@@ -243,11 +255,23 @@ select
 	registration.email,
 	id as ror_id,
 	name as ror_name,
+	false as citizen_scientist,
+	false as international,
 	'NIH' AS una_path
 from n3c_admin.registration,n3c_admin.registration_remap_email,ror.organization
 where registration.email~'nih.gov$'
   and registration.email = registration_remap_email.email
   and registration_remap_email.ror_id = organization.id
+union
+select
+	registration.email,
+	null as ror_id,
+	null as ror_name,
+	true as citizen_scientist,
+	false as international,
+	'login.gov' AS una_path
+from n3c_admin.registration,n3c_admin.citizen_master
+where email=email_address
 ;
 
 create view n3c_admin.staging_membership as
@@ -285,6 +309,8 @@ select
 	twitter_id,
 	expertise,
 	therapeutic_area,
+	citizen_scientist,
+	international,
 	assistant_email,
 	case when enclave then 'TRUE' else 'FALSE' end as enclave,
 	case when workstreams then 'TRUE' else 'FALSE' end as workstreams,
