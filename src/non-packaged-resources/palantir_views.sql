@@ -10,14 +10,17 @@ SELECT
     orcid_id,
     expertise,
     therapeutic_area,
-    false as citizen_scientist,
-    false as international,
+    citizen_scientist,
+    international,
     created,
     updated,
     una_path
 FROM n3c_admin.gsuite_view
 WHERE enclave = 'TRUE'
-  AND ror_id IN (SELECT institutionid from n3c_admin.dua_master)
+  AND (ror_id IN (SELECT institutionid from n3c_admin.dua_master)
+  		OR
+  		email in (SELECT email_address from n3c_admin.citizen_master)
+  		)
 ;
 
 CREATE VIEW palantir.n3c_organization AS
