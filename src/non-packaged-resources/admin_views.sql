@@ -272,6 +272,17 @@ select
 	'login.gov' AS una_path
 from n3c_admin.registration,n3c_admin.citizen_master
 where email=email_address
+union
+select
+	registration.email,
+	institutionid as ror_id,
+	institutionname as ror_name,
+	false as citizen_scientist,
+	true as international,
+	'login.gov' AS una_path
+from n3c_admin.registration,n3c_admin.registration_remap_international,n3c_admin.dua_master
+where registration.email=registration_remap_international.email
+  and registration_remap_international.ror_id = dua_master.institutionid
 ;
 
 create view n3c_admin.staging_membership as
