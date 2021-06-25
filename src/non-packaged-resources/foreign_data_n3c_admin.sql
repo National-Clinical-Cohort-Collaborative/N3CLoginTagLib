@@ -1,11 +1,11 @@
-CREATE EXTENSION IN NOT EXISTS postgres_fdw;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 
 --
 -- neuromancer.n3c_admin
 --
 CREATE SERVER neuromancer_server
   FOREIGN DATA WRAPPER postgres_fdw
-  OPTIONS (host 'neuromancer.slis.uiowa.edu', dbname 'cd2h');
+  OPTIONS (host 'neuromancer.slis.uiowa.edu', dbname 'cd2h', use_remote_estimate 'true', fetch_size '50000', batch_size '50000');
 
 CREATE USER MAPPING FOR CURRENT_USER
   SERVER neuromancer_server
@@ -22,7 +22,7 @@ IMPORT FOREIGN SCHEMA n3c_admin
 --
 CREATE SERVER deep_thought_server
   FOREIGN DATA WRAPPER postgres_fdw
-  OPTIONS (host 'deep-thought.slis.uiowa.edu', dbname 'loki');
+  OPTIONS (host 'deep-thought.slis.uiowa.edu', dbname 'loki', use_remote_estimate true, fetch_size 50000, batch_size 50000);
 
 CREATE USER MAPPING FOR CURRENT_USER
   SERVER deep_thought_server
