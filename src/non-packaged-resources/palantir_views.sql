@@ -46,4 +46,6 @@ SELECT * FROM n3c_admin.citizen_master;
 CREATE VIEW palantir.dua_master AS
 SELECT * from n3c_admin.dua_master;
 
+select email,official_institution,una_path.* from n3c_admin.registration,palantir.una_path where enclave and email not in (select email from palantir.n3c_user) and substring(lower(email) from '.*@(.*)') = substring and official_institution='login.gov' and substring not in ('gmail.com','hotmail.com','nih.gov','yahoo.com') order by 3,1;
+
 GRANT SELECT ON ALL TABLES IN SCHEMA palantir TO palantir;
