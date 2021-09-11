@@ -46,6 +46,23 @@ SELECT * FROM n3c_admin.citizen_master;
 CREATE VIEW palantir.dua_master AS
 SELECT * from n3c_admin.dua_master;
 
+CREATE VIEW palantir.una_path AS
+select substring(lower(email) from '.*@(.*)'),una_path,count(*) from palantir.n3c_user group by 1,2 
+;
+
+create view n3c_admin.domain_team_lead as
+select domain_team_lead.nid,lead_nid,title,email,last_name,first_name
+from n3c_web.bio,n3c_web.domain_team_lead,n3c_admin.registration 
+where bio.nid = domain_team_lead.lead_nid and title ~* (first_name||'.*'||last_name) and last_name != ''  
+union
+select domain_team_lead.nid,lead_nid,title,email,last_name,first_name
+from n3c_web.domain_team_lead natural join domain_team_lead_map natural join registration,n3c_web.bio
+where lead_nid=bio.nid  
+order by 1,2;
+
+create view palantir.domain_team_lead as select * from n3c_admin.domain_team_lead;
+
+
 select email,official_institution,una_path.* from n3c_admin.registration,palantir.una_path where enclave and email not in (select email from palantir.n3c_user) and substring(lower(email) from '.*@(.*)') = substring and official_institution='login.gov' and substring not in ('gmail.com','hotmail.com','nih.gov','yahoo.com') order by 3,1;
 
 GRANT SELECT ON ALL TABLES IN SCHEMA palantir TO palantir;

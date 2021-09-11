@@ -79,6 +79,7 @@ src/non-packaged-resources/Model.clay -text svneol=unset#application/xml
 src/non-packaged-resources/admin_views.sql -text
 src/non-packaged-resources/backfill.sql -text
 src/non-packaged-resources/foreign_data_n3c_admin.sql -text
+src/non-packaged-resources/incommon.sql -text
 src/non-packaged-resources/palantir_views.sql -text
 src/non-packaged-resources/registration.sql -text
 src/test/java/org/cd2h/n3c/README.txt -text
