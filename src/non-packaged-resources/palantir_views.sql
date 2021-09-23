@@ -51,12 +51,15 @@ select substring(lower(email) from '.*@(.*)'),una_path,count(*) from palantir.n3
 ;
 
 create view n3c_admin.domain_team_lead as
-select domain_team_lead.nid,lead_nid,title,email,last_name,first_name
-from n3c_web.bio,n3c_web.domain_team_lead,n3c_admin.registration 
-where bio.nid = domain_team_lead.lead_nid and title ~* (first_name||'.*'||last_name) and last_name != ''  
+select distinct domain_team_lead.nid,lead_nid,title,email,last_name,first_name,registration.orcid_id,unite_user_id
+from n3c_web.bio,n3c_web.domain_team_lead,n3c_admin.registration,n3c_admin.user_binding
+where bio.nid = domain_team_lead.lead_nid
+  and registration.orcid_id = user_binding.orcid_id
+  and title ~(first_name||'.*'||replace(last_name,'-','\-'))
+  and last_name != ''  
 union
-select domain_team_lead.nid,lead_nid,title,email,last_name,first_name
-from n3c_web.domain_team_lead natural join domain_team_lead_map natural join registration,n3c_web.bio
+select domain_team_lead.nid,lead_nid,title,email,last_name,first_name,registration.orcid_id,unite_user_id
+from n3c_web.domain_team_lead natural join domain_team_lead_map natural join registration natural join n3c_admin.user_binding,n3c_web.bio
 where lead_nid=bio.nid  
 order by 1,2;
 
