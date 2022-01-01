@@ -4,11 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import org.cd2h.n3c.project.Project;
 import org.cd2h.n3c.domainTeam.DomainTeam;
 
@@ -16,20 +19,23 @@ import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 import org.cd2h.n3c.Sequence;
 
 @SuppressWarnings("serial")
-
 public class Binding extends N3CLoginTagLibTagSupport {
 
 	static Binding currentInstance = null;
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log =LogFactory.getLog(Binding.class);
+	private static final Logger log = LogManager.getLogger(Binding.class);
 
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
 	String email = null;
 	String uid = null;
 	int nid = 0;
+
+	private String var = null;
+
+	private Binding cachedBinding = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -62,7 +68,6 @@ public class Binding extends N3CLoginTagLibTagSupport {
 			if (theBindingIterator == null && theProject == null && theDomainTeam == null && email == null) {
 				// no email was provided - the default is to assume that it is a new Binding and to generate a new email
 				email = null;
-				log.debug("generating new Binding " + email);
 				insertEntity();
 			} else if (theBindingIterator == null && theProject != null && theDomainTeam == null) {
 				// an email was provided as an attribute - we need to load a Binding from the database
@@ -117,19 +122,76 @@ public class Binding extends N3CLoginTagLibTagSupport {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error retrieving email " + email);
+			log.error("JDBC error retrieving email " + email, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving email " + email);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving email " + email,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Binding currentBinding = (Binding) pageContext.getAttribute("tag_binding");
+			if(currentBinding != null){
+				cachedBinding = currentBinding;
+			}
+			currentBinding = this;
+			pageContext.setAttribute((var == null ? "tag_binding" : var), currentBinding);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedBinding != null){
+				pageContext.setAttribute((var == null ? "tag_binding" : var), this.cachedBinding);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_binding" : var));
+				this.cachedBinding = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.binding set where email = ? and uid = ? and nid = ?");
+				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.binding set where email = ?  and uid = ?  and nid = ? ");
 				stmt.setString(1,email);
 				stmt.setString(2,uid);
 				stmt.setInt(3,nid);
@@ -137,8 +199,21 @@ public class Binding extends N3CLoginTagLibTagSupport {
 				stmt.close();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
+			log.error("Error: IOException while writing to the user", e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -146,20 +221,14 @@ public class Binding extends N3CLoginTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.binding(email,uid,nid) values (?,?,?)");
-			stmt.setString(1,email);
-			stmt.setString(2,uid);
-			stmt.setInt(3,nid);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
-		}
+	public void insertEntity() throws JspException, SQLException {
+		PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.binding(email,uid,nid) values (?,?,?)");
+		stmt.setString(1,email);
+		stmt.setString(2,uid);
+		stmt.setInt(3,nid);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public String getEmail () {
@@ -204,6 +273,18 @@ public class Binding extends N3CLoginTagLibTagSupport {
 		return nid;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static String emailValue() throws JspException {
 		try {
 			return currentInstance.getEmail();
@@ -220,7 +301,7 @@ public class Binding extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static int nidValue() throws JspException {
+	public static Integer nidValue() throws JspException {
 		try {
 			return currentInstance.getNid();
 		} catch (Exception e) {
@@ -235,6 +316,7 @@ public class Binding extends N3CLoginTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<N3CLoginTagLibTagSupport>();
+		this.var = null;
 
 	}
 

@@ -4,29 +4,35 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 
 @SuppressWarnings("serial")
-
 public class Workstream extends N3CLoginTagLibTagSupport {
 
 	static Workstream currentInstance = null;
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log =LogFactory.getLog(Workstream.class);
+	private static final Logger log = LogManager.getLogger(Workstream.class);
 
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
 	String label = null;
 	String fullName = null;
 	String description = null;
+
+	private String var = null;
+
+	private Workstream cachedWorkstream = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -42,7 +48,6 @@ public class Workstream extends N3CLoginTagLibTagSupport {
 			if (theWorkstreamIterator == null && label == null) {
 				// no label was provided - the default is to assume that it is a new Workstream and to generate a new label
 				label = null;
-				log.debug("generating new Workstream " + label);
 				insertEntity();
 			} else {
 				// an iterator or label was provided as an attribute - we need to load a Workstream from the database
@@ -64,28 +69,98 @@ public class Workstream extends N3CLoginTagLibTagSupport {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error retrieving label " + label);
+			log.error("JDBC error retrieving label " + label, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving label " + label);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving label " + label,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Workstream currentWorkstream = (Workstream) pageContext.getAttribute("tag_workstream");
+			if(currentWorkstream != null){
+				cachedWorkstream = currentWorkstream;
+			}
+			currentWorkstream = this;
+			pageContext.setAttribute((var == null ? "tag_workstream" : var), currentWorkstream);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedWorkstream != null){
+				pageContext.setAttribute((var == null ? "tag_workstream" : var), this.cachedWorkstream);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_workstream" : var));
+				this.cachedWorkstream = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.workstream set full_name = ?, description = ? where label = ?");
-				stmt.setString(1,fullName);
-				stmt.setString(2,description);
+				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.workstream set full_name = ?, description = ? where label = ? ");
+				stmt.setString( 1, fullName );
+				stmt.setString( 2, description );
 				stmt.setString(3,label);
 				stmt.executeUpdate();
 				stmt.close();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
+			log.error("Error: IOException while writing to the user", e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -93,24 +168,20 @@ public class Workstream extends N3CLoginTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (fullName == null)
-				fullName = "";
-			if (description == null)
-				description = "";
-			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.workstream(label,full_name,description) values (?,?,?)");
-			stmt.setString(1,label);
-			stmt.setString(2,fullName);
-			stmt.setString(3,description);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (fullName == null){
+			fullName = "";
 		}
+		if (description == null){
+			description = "";
+		}
+		PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.workstream(label,full_name,description) values (?,?,?)");
+		stmt.setString(1,label);
+		stmt.setString(2,fullName);
+		stmt.setString(3,description);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public String getLabel () {
@@ -160,6 +231,18 @@ public class Workstream extends N3CLoginTagLibTagSupport {
 		return description;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static String labelValue() throws JspException {
 		try {
 			return currentInstance.getLabel();
@@ -191,6 +274,7 @@ public class Workstream extends N3CLoginTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<N3CLoginTagLibTagSupport>();
+		this.var = null;
 
 	}
 

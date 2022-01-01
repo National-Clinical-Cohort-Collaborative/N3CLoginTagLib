@@ -8,11 +8,11 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.sql.DataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 @SuppressWarnings("serial")
-
 public class N3CLoginTagLibBodyTagSupport extends BodyTagSupport {
 
     protected DataSource theDataSource = null;
@@ -22,7 +22,7 @@ public class N3CLoginTagLibBodyTagSupport extends BodyTagSupport {
         super();
     }
 
-    private static final Log log =LogFactory.getLog(N3CLoginTagLibBodyTagSupport.class);
+    private static final Logger log = LogManager.getLogger(N3CLoginTagLibBodyTagSupport.class);
 
     @Override
     public int doEndTag() throws JspException {
@@ -52,7 +52,7 @@ public class N3CLoginTagLibBodyTagSupport extends BodyTagSupport {
         	theConnection.close();
         theConnection = null;
      } catch (SQLException e) {
-         e.printStackTrace();
+         log.error("JDBC error freeing connection", e);
         theConnection = null;
          throw new JspTagException("Error: JDBC error freeing connection");
      }

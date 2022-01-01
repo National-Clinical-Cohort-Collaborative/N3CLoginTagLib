@@ -4,32 +4,38 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import org.cd2h.n3c.workstream.Workstream;
 import org.cd2h.n3c.registration.Registration;
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 
 @SuppressWarnings("serial")
-
 public class Membership extends N3CLoginTagLibTagSupport {
 
 	static Membership currentInstance = null;
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log =LogFactory.getLog(Membership.class);
+	private static final Logger log = LogManager.getLogger(Membership.class);
 
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
 	String email = null;
 	String label = null;
-	Date joined = null;
+	Timestamp joined = null;
+
+	private String var = null;
+
+	private Membership cachedMembership = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -60,7 +66,6 @@ public class Membership extends N3CLoginTagLibTagSupport {
 			if (theMembershipIterator == null && theWorkstream == null && theRegistration == null && email == null) {
 				// no email was provided - the default is to assume that it is a new Membership and to generate a new email
 				email = null;
-				log.debug("generating new Membership " + email);
 				insertEntity();
 			} else if (theMembershipIterator == null && theWorkstream != null && theRegistration == null) {
 				// an email was provided as an attribute - we need to load a Membership from the database
@@ -117,28 +122,98 @@ public class Membership extends N3CLoginTagLibTagSupport {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error retrieving email " + email);
+			log.error("JDBC error retrieving email " + email, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving email " + email);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving email " + email,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Membership currentMembership = (Membership) pageContext.getAttribute("tag_membership");
+			if(currentMembership != null){
+				cachedMembership = currentMembership;
+			}
+			currentMembership = this;
+			pageContext.setAttribute((var == null ? "tag_membership" : var), currentMembership);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedMembership != null){
+				pageContext.setAttribute((var == null ? "tag_membership" : var), this.cachedMembership);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_membership" : var));
+				this.cachedMembership = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.membership set joined = ? where email = ? and label = ?");
-				stmt.setTimestamp(1,joined == null ? null : new java.sql.Timestamp(joined.getTime()));
+				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.membership set joined = ? where email = ?  and label = ? ");
+				stmt.setTimestamp( 1, joined );
 				stmt.setString(2,email);
 				stmt.setString(3,label);
 				stmt.executeUpdate();
 				stmt.close();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
+			log.error("Error: IOException while writing to the user", e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -146,20 +221,14 @@ public class Membership extends N3CLoginTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.membership(email,label,joined) values (?,?,?)");
-			stmt.setString(1,email);
-			stmt.setString(2,label);
-			stmt.setTimestamp(3,joined == null ? null : new java.sql.Timestamp(joined.getTime()));
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
-		}
+	public void insertEntity() throws JspException, SQLException {
+		PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.membership(email,label,joined) values (?,?,?)");
+		stmt.setString(1,email);
+		stmt.setString(2,label);
+		stmt.setTimestamp(3,joined);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public String getEmail () {
@@ -192,22 +261,34 @@ public class Membership extends N3CLoginTagLibTagSupport {
 		return label;
 	}
 
-	public Date getJoined () {
+	public Timestamp getJoined () {
 		return joined;
 	}
 
-	public void setJoined (Date joined) {
+	public void setJoined (Timestamp joined) {
 		this.joined = joined;
 		commitNeeded = true;
 	}
 
-	public Date getActualJoined () {
+	public Timestamp getActualJoined () {
 		return joined;
 	}
 
 	public void setJoinedToNow ( ) {
-		this.joined = new java.util.Date();
+		this.joined = new java.sql.Timestamp(new java.util.Date().getTime());
 		commitNeeded = true;
+	}
+
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
 	}
 
 	public static String emailValue() throws JspException {
@@ -226,7 +307,7 @@ public class Membership extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static Date joinedValue() throws JspException {
+	public static Timestamp joinedValue() throws JspException {
 		try {
 			return currentInstance.getJoined();
 		} catch (Exception e) {
@@ -241,6 +322,7 @@ public class Membership extends N3CLoginTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<N3CLoginTagLibTagSupport>();
+		this.var = null;
 
 	}
 

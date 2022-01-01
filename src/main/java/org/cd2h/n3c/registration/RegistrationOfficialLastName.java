@@ -2,11 +2,17 @@ package org.cd2h.n3c.registration;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 
 @SuppressWarnings("serial")
 public class RegistrationOfficialLastName extends N3CLoginTagLibTagSupport {
+
+	private static final Logger log = LogManager.getLogger(RegistrationOfficialLastName.class);
 
 	public int doStartTag() throws JspException {
 		try {
@@ -15,29 +21,58 @@ public class RegistrationOfficialLastName extends N3CLoginTagLibTagSupport {
 				pageContext.getOut().print(theRegistration.getOfficialLastName());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: Can't find enclosing Registration for officialLastName tag ");
+			log.error("Can't find enclosing Registration for officialLastName tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Registration for officialLastName tag ");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Registration for officialLastName tag ");
+			}
+
 		}
 		return SKIP_BODY;
 	}
 
-	public String getOfficialLastName() throws JspTagException {
+	public String getOfficialLastName() throws JspException {
 		try {
 			Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
 			return theRegistration.getOfficialLastName();
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: Can't find enclosing Registration for officialLastName tag ");
+			log.error("Can't find enclosing Registration for officialLastName tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Registration for officialLastName tag ");
+				parent.doEndTag();
+				return null;
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Registration for officialLastName tag ");
+			}
 		}
 	}
 
-	public void setOfficialLastName(String officialLastName) throws JspTagException {
+	public void setOfficialLastName(String officialLastName) throws JspException {
 		try {
 			Registration theRegistration = (Registration)findAncestorWithClass(this, Registration.class);
 			theRegistration.setOfficialLastName(officialLastName);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: Can't find enclosing Registration for officialLastName tag ");
+			log.error("Can't find enclosing Registration for officialLastName tag ", e);
+			freeConnection();
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: Can't find enclosing Registration for officialLastName tag ");
+				parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: Can't find enclosing Registration for officialLastName tag ");
+			}
 		}
 	}
 

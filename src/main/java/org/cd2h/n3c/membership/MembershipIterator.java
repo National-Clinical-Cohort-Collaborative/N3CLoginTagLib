@@ -5,12 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 import org.cd2h.n3c.N3CLoginTagLibBodyTagSupport;
@@ -18,14 +19,13 @@ import org.cd2h.n3c.workstream.Workstream;
 import org.cd2h.n3c.registration.Registration;
 
 @SuppressWarnings("serial")
-
 public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
     String email = null;
     String label = null;
-    Date joined = null;
+    Timestamp joined = null;
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
-	private static final Log log =LogFactory.getLog(Membership.class);
+	private static final Logger log = LogManager.getLogger(MembershipIterator.class);
 
 
     PreparedStatement stat = null;
@@ -54,7 +54,7 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 			}
 			stat.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error("JDBC error generating Membership iterator", e);
 			throw new JspTagException("Error: JDBC error generating Membership iterator");
 		} finally {
 			theIterator.freeConnection();
@@ -82,7 +82,7 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 			}
 			stat.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error("JDBC error generating Membership iterator", e);
 			throw new JspTagException("Error: JDBC error generating Membership iterator");
 		} finally {
 			theIterator.freeConnection();
@@ -112,7 +112,7 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 			}
 			stat.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error("JDBC error generating Membership iterator", e);
 			throw new JspTagException("Error: JDBC error generating Membership iterator");
 		} finally {
 			theIterator.freeConnection();
@@ -138,7 +138,7 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 			}
 			stat.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error("JDBC error generating Membership iterator", e);
 			throw new JspTagException("Error: JDBC error generating Membership iterator");
 		} finally {
 			theIterator.freeConnection();
@@ -165,27 +165,55 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
 
 
       try {
+            //run count query  
             int webapp_keySeq = 1;
-            stat = getConnection().prepareStatement("SELECT n3c_admin.membership.email, n3c_admin.membership.label from " + generateFromClause() + " where 1=1"
+            stat = getConnection().prepareStatement("SELECT count(*) from " + generateFromClause() + " where 1=1"
                                                         + generateJoinCriteria()
                                                         + (label == null ? "" : " and label = ?")
                                                         + (email == null ? "" : " and email = ?")
-                                                        + " order by " + generateSortCriteria() + generateLimitCriteria());
+                                                        + generateLimitCriteria());
             if (label != null) stat.setString(webapp_keySeq++, label);
             if (email != null) stat.setString(webapp_keySeq++, email);
             rs = stat.executeQuery();
 
             if (rs.next()) {
+                pageContext.setAttribute(var+"Total", rs.getInt(1));
+            }
+
+
+            //run select id query  
+            webapp_keySeq = 1;
+            stat = getConnection().prepareStatement("SELECT n3c_admin.membership.email, n3c_admin.membership.label from " + generateFromClause() + " where 1=1"
+                                                        + generateJoinCriteria()
+                                                        + (label == null ? "" : " and label = ?")
+                                                        + (email == null ? "" : " and email = ?")
+                                                        + " order by " + generateSortCriteria()  +  generateLimitCriteria());
+            if (label != null) stat.setString(webapp_keySeq++, label);
+            if (email != null) stat.setString(webapp_keySeq++, email);
+            rs = stat.executeQuery();
+
+            if ( rs != null && rs.next() ) {
                 email = rs.getString(1);
                 label = rs.getString(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_INCLUDE;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error generating Membership iterator: " + stat.toString());
+            log.error("JDBC error generating Membership iterator: " + stat.toString(), e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: JDBC error generating Membership iterator: " + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error generating Membership iterator: " + stat.toString(),e);
+			}
+
         }
 
         return SKIP_BODY;
@@ -204,9 +232,9 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
     private String generateJoinCriteria() {
        StringBuffer theBuffer = new StringBuffer();
        if (useWorkstream)
-          theBuffer.append(" and workstream.label = membership.null");
+          theBuffer.append(" and workstream.label = membership.label");
        if (useRegistration)
-          theBuffer.append(" and registration.email = membership.null");
+          theBuffer.append(" and registration.email = membership.email");
 
       return theBuffer.toString();
     }
@@ -227,30 +255,86 @@ public class MembershipIterator extends N3CLoginTagLibBodyTagSupport {
         }
     }
 
-    public int doAfterBody() throws JspTagException {
+    public int doAfterBody() throws JspException {
         try {
-            if (rs.next()) {
+            if ( rs != null && rs.next() ) {
                 email = rs.getString(1);
                 label = rs.getString(2);
                 pageContext.setAttribute(var, ++rsCount);
                 return EVAL_BODY_AGAIN;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            clearServiceState();
-            freeConnection();
-            throw new JspTagException("Error: JDBC error iterating across Membership");
+            log.error("JDBC error iterating across Membership", e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error iterating across Membership" + stat.toString());
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error iterating across Membership",e);
+			}
+
         }
         return SKIP_BODY;
     }
 
     public int doEndTag() throws JspTagException, JspException {
         try {
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new JspTagException("Error: JDBC error ending Membership iterator");
+			if( pageContext != null ){
+				Boolean error = (Boolean) pageContext.getAttribute("tagError");
+				if( error != null && error ){
+
+					freeConnection();
+					clearServiceState();
+
+					Exception e = null; // (Exception) pageContext.getAttribute("tagErrorException");
+					String message = null; // (String) pageContext.getAttribute("tagErrorMessage");
+
+					if(pageContext != null){
+						e = (Exception) pageContext.getAttribute("tagErrorException");
+						message = (String) pageContext.getAttribute("tagErrorMessage");
+
+					}
+					Tag parent = getParent();
+					if(parent != null){
+						return parent.doEndTag();
+					}else if(e != null && message != null){
+						throw new JspException(message,e);
+					}else if(parent == null && pageContext != null){
+						pageContext.removeAttribute("tagError");
+						pageContext.removeAttribute("tagErrorException");
+						pageContext.removeAttribute("tagErrorMessage");
+					}
+				}
+			}
+
+            if( rs != null ){
+                rs.close();
+            }
+
+            if( stat != null ){
+                stat.close();
+            }
+
+        } catch ( SQLException e ) {
+            log.error("JDBC error ending Membership iterator",e);
+			freeConnection();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving email " + email);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("Error: JDBC error ending Membership iterator",e);
+			}
+
         } finally {
             clearServiceState();
             freeConnection();

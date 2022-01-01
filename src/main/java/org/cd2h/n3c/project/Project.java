@@ -4,24 +4,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 import org.cd2h.n3c.registration.Registration;
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 
 @SuppressWarnings("serial")
-
 public class Project extends N3CLoginTagLibTagSupport {
 
 	static Project currentInstance = null;
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log =LogFactory.getLog(Project.class);
+	private static final Logger log = LogManager.getLogger(Project.class);
 
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
@@ -31,6 +33,10 @@ public class Project extends N3CLoginTagLibTagSupport {
 	String researchStatement = null;
 	boolean domainTeam = false;
 	String accessingInstitution = null;
+
+	private String var = null;
+
+	private Project cachedProject = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -54,7 +60,6 @@ public class Project extends N3CLoginTagLibTagSupport {
 			if (theProjectIterator == null && theRegistration == null && uid == null) {
 				// no uid was provided - the default is to assume that it is a new Project and to generate a new uid
 				uid = null;
-				log.debug("generating new Project " + uid);
 				insertEntity();
 			} else {
 				// an iterator or uid was provided as an attribute - we need to load a Project from the database
@@ -81,31 +86,101 @@ public class Project extends N3CLoginTagLibTagSupport {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error retrieving uid " + uid);
+			log.error("JDBC error retrieving uid " + uid, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving uid " + uid);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving uid " + uid,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Project currentProject = (Project) pageContext.getAttribute("tag_project");
+			if(currentProject != null){
+				cachedProject = currentProject;
+			}
+			currentProject = this;
+			pageContext.setAttribute((var == null ? "tag_project" : var), currentProject);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedProject != null){
+				pageContext.setAttribute((var == null ? "tag_project" : var), this.cachedProject);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_project" : var));
+				this.cachedProject = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.project set title = ?, research_statement = ?, domain_team = ?, accessing_institution = ? where email = ? and uid = ?");
-				stmt.setString(1,title);
-				stmt.setString(2,researchStatement);
-				stmt.setBoolean(3,domainTeam);
-				stmt.setString(4,accessingInstitution);
+				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.project set title = ?, research_statement = ?, domain_team = ?, accessing_institution = ? where email = ?  and uid = ? ");
+				stmt.setString( 1, title );
+				stmt.setString( 2, researchStatement );
+				stmt.setBoolean( 3, domainTeam );
+				stmt.setString( 4, accessingInstitution );
 				stmt.setString(5,email);
 				stmt.setString(6,uid);
 				stmt.executeUpdate();
 				stmt.close();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
+			log.error("Error: IOException while writing to the user", e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -113,29 +188,26 @@ public class Project extends N3CLoginTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (title == null)
-				title = "";
-			if (researchStatement == null)
-				researchStatement = "";
-			if (accessingInstitution == null)
-				accessingInstitution = "";
-			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.project(email,uid,title,research_statement,domain_team,accessing_institution) values (?,?,?,?,?,?)");
-			stmt.setString(1,email);
-			stmt.setString(2,uid);
-			stmt.setString(3,title);
-			stmt.setString(4,researchStatement);
-			stmt.setBoolean(5,domainTeam);
-			stmt.setString(6,accessingInstitution);
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (title == null){
+			title = "";
 		}
+		if (researchStatement == null){
+			researchStatement = "";
+		}
+		if (accessingInstitution == null){
+			accessingInstitution = "";
+		}
+		PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.project(email,uid,title,research_statement,domain_team,accessing_institution) values (?,?,?,?,?,?)");
+		stmt.setString(1,email);
+		stmt.setString(2,uid);
+		stmt.setString(3,title);
+		stmt.setString(4,researchStatement);
+		stmt.setBoolean(5,domainTeam);
+		stmt.setString(6,accessingInstitution);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public String getEmail () {
@@ -229,6 +301,18 @@ public class Project extends N3CLoginTagLibTagSupport {
 		return accessingInstitution;
 	}
 
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
+	}
+
 	public static String emailValue() throws JspException {
 		try {
 			return currentInstance.getEmail();
@@ -261,7 +345,7 @@ public class Project extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static boolean domainTeamValue() throws JspException {
+	public static Boolean domainTeamValue() throws JspException {
 		try {
 			return currentInstance.getDomainTeam();
 		} catch (Exception e) {
@@ -287,6 +371,7 @@ public class Project extends N3CLoginTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<N3CLoginTagLibTagSupport>();
+		this.var = null;
 
 	}
 

@@ -61,6 +61,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>email</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -305,30 +311,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -353,30 +335,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -398,30 +356,6 @@
 
 		<attribute>
 			<name>emailed</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -473,6 +407,12 @@
 		<name>workstream</name>
 		<tag-class>org.cd2h.n3c.workstream.Workstream</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>label</name>
@@ -584,6 +524,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>email</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -648,30 +594,6 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-
-		<attribute>
-			<name>type</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>dateStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>timeStyle</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
-			<name>pattern</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
 	</tag>
 
 	<tag>
@@ -726,6 +648,12 @@
 		<name>project</name>
 		<tag-class>org.cd2h.n3c.project.Project</tag-class>
 		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 
 		<attribute>
 			<name>email</name>
@@ -866,6 +794,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>nid</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -981,6 +915,12 @@
 		<body-content>JSP</body-content>
 
 		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+
+		<attribute>
 			<name>email</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1072,132 +1012,6 @@
 	</function>
 
 	<function>
-		<name>registrationEmailValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationOfficialFirstNameValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String officialFirstNameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationOfficialLastNameValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String officialLastNameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationOfficialFullNameValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String officialFullNameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationOfficialInstitutionValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String officialInstitutionValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationFirstNameValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String firstNameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationLastNameValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String lastNameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationInstitutionValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String institutionValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationOrcidIdValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String orcidIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationGsuiteEmailValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String gsuiteEmailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationSlackIdValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String slackIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationGithubIdValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String githubIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationTwitterIdValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String twitterIdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationExpertiseValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String expertiseValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationTherapeuticAreaValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String therapeuticAreaValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationAssistantEmailValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.String assistantEmailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationEnclaveValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.Boolean enclaveValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationWorkstreamsValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.Boolean workstreamsValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationCreatedValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.Date createdValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationUpdatedValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.Date updatedValue()</function-signature>
-	</function>
-
-	<function>
-		<name>registrationEmailedValue</name>
-		<function-class>org.cd2h.n3c.registration.Registration</function-class>
-		<function-signature>java.lang.Date emailedValue()</function-signature>
-	</function>
-
-	<function>
 		<name>workstreamCount</name>
 		<function-class>org.cd2h.n3c.workstream.WorkstreamIterator</function-class>
 		<function-signature>java.lang.String workstreamCount()</function-signature>
@@ -1207,24 +1021,6 @@
 		<name>workstreamExists</name>
 		<function-class>org.cd2h.n3c.workstream.WorkstreamIterator</function-class>
 		<function-signature>java.lang.String workstreamExists(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>workstreamLabelValue</name>
-		<function-class>org.cd2h.n3c.workstream.Workstream</function-class>
-		<function-signature>java.lang.String labelValue()</function-signature>
-	</function>
-
-	<function>
-		<name>workstreamFullNameValue</name>
-		<function-class>org.cd2h.n3c.workstream.Workstream</function-class>
-		<function-signature>java.lang.String fullNameValue()</function-signature>
-	</function>
-
-	<function>
-		<name>workstreamDescriptionValue</name>
-		<function-class>org.cd2h.n3c.workstream.Workstream</function-class>
-		<function-signature>java.lang.String descriptionValue()</function-signature>
 	</function>
 
 	<function>
@@ -1264,24 +1060,6 @@
 	</function>
 
 	<function>
-		<name>membershipEmailValue</name>
-		<function-class>org.cd2h.n3c.membership.Membership</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>membershipLabelValue</name>
-		<function-class>org.cd2h.n3c.membership.Membership</function-class>
-		<function-signature>java.lang.String labelValue()</function-signature>
-	</function>
-
-	<function>
-		<name>membershipJoinedValue</name>
-		<function-class>org.cd2h.n3c.membership.Membership</function-class>
-		<function-signature>java.lang.Date joinedValue()</function-signature>
-	</function>
-
-	<function>
 		<name>projectExists</name>
 		<function-class>org.cd2h.n3c.project.ProjectIterator</function-class>
 		<function-signature>java.lang.String projectExists(java.lang.String, java.lang.String)</function-signature>
@@ -1300,42 +1078,6 @@
 	</function>
 
 	<function>
-		<name>projectEmailValue</name>
-		<function-class>org.cd2h.n3c.project.Project</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>projectUidValue</name>
-		<function-class>org.cd2h.n3c.project.Project</function-class>
-		<function-signature>java.lang.String uidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>projectTitleValue</name>
-		<function-class>org.cd2h.n3c.project.Project</function-class>
-		<function-signature>java.lang.String titleValue()</function-signature>
-	</function>
-
-	<function>
-		<name>projectResearchStatementValue</name>
-		<function-class>org.cd2h.n3c.project.Project</function-class>
-		<function-signature>java.lang.String researchStatementValue()</function-signature>
-	</function>
-
-	<function>
-		<name>projectDomainTeamValue</name>
-		<function-class>org.cd2h.n3c.project.Project</function-class>
-		<function-signature>java.lang.Boolean domainTeamValue()</function-signature>
-	</function>
-
-	<function>
-		<name>projectAccessingInstitutionValue</name>
-		<function-class>org.cd2h.n3c.project.Project</function-class>
-		<function-signature>java.lang.String accessingInstitutionValue()</function-signature>
-	</function>
-
-	<function>
 		<name>domainTeamCount</name>
 		<function-class>org.cd2h.n3c.domainTeam.DomainTeamIterator</function-class>
 		<function-signature>java.lang.String domainTeamCount()</function-signature>
@@ -1345,24 +1087,6 @@
 		<name>domainTeamExists</name>
 		<function-class>org.cd2h.n3c.domainTeam.DomainTeamIterator</function-class>
 		<function-signature>java.lang.String domainTeamExists(java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>domainTeamNidValue</name>
-		<function-class>org.cd2h.n3c.domainTeam.DomainTeam</function-class>
-		<function-signature>java.lang.Integer nidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>domainTeamVidValue</name>
-		<function-class>org.cd2h.n3c.domainTeam.DomainTeam</function-class>
-		<function-signature>java.lang.Integer vidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>domainTeamTitleValue</name>
-		<function-class>org.cd2h.n3c.domainTeam.DomainTeam</function-class>
-		<function-signature>java.lang.String titleValue()</function-signature>
 	</function>
 
 	<function>
@@ -1399,23 +1123,5 @@
 		<name>projectDomainTeamExists</name>
 		<function-class>org.cd2h.n3c.binding.BindingIterator</function-class>
 		<function-signature>java.lang.Boolean projectDomainTeamExists(java.lang.String, java.lang.String, java.lang.String)</function-signature>
-	</function>
-
-	<function>
-		<name>bindingEmailValue</name>
-		<function-class>org.cd2h.n3c.binding.Binding</function-class>
-		<function-signature>java.lang.String emailValue()</function-signature>
-	</function>
-
-	<function>
-		<name>bindingUidValue</name>
-		<function-class>org.cd2h.n3c.binding.Binding</function-class>
-		<function-signature>java.lang.String uidValue()</function-signature>
-	</function>
-
-	<function>
-		<name>bindingNidValue</name>
-		<function-class>org.cd2h.n3c.binding.Binding</function-class>
-		<function-signature>java.lang.Integer nidValue()</function-signature>
 	</function>
 </taglib>

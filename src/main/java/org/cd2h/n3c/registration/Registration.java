@@ -4,24 +4,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Date;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.sql.Timestamp;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.Tag;
+
 
 import org.cd2h.n3c.N3CLoginTagLibTagSupport;
 
 @SuppressWarnings("serial")
-
 public class Registration extends N3CLoginTagLibTagSupport {
 
 	static Registration currentInstance = null;
 	boolean commitNeeded = false;
 	boolean newRecord = false;
 
-	private static final Log log =LogFactory.getLog(Registration.class);
+	private static final Logger log = LogManager.getLogger(Registration.class);
 
 	Vector<N3CLoginTagLibTagSupport> parentEntities = new Vector<N3CLoginTagLibTagSupport>();
 
@@ -43,9 +45,13 @@ public class Registration extends N3CLoginTagLibTagSupport {
 	String assistantEmail = null;
 	boolean enclave = false;
 	boolean workstreams = false;
-	Date created = null;
-	Date updated = null;
-	Date emailed = null;
+	Timestamp created = null;
+	Timestamp updated = null;
+	Timestamp emailed = null;
+
+	private String var = null;
+
+	private Registration cachedRegistration = null;
 
 	public int doStartTag() throws JspException {
 		currentInstance = this;
@@ -61,7 +67,6 @@ public class Registration extends N3CLoginTagLibTagSupport {
 			if (theRegistrationIterator == null && email == null) {
 				// no email was provided - the default is to assume that it is a new Registration and to generate a new email
 				email = null;
-				log.debug("generating new Registration " + email);
 				insertEntity();
 			} else {
 				// an iterator or email was provided as an attribute - we need to load a Registration from the database
@@ -119,46 +124,116 @@ public class Registration extends N3CLoginTagLibTagSupport {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: JDBC error retrieving email " + email);
+			log.error("JDBC error retrieving email " + email, e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "JDBC error retrieving email " + email);
+				return parent.doEndTag();
+			}else{
+				throw new JspException("JDBC error retrieving email " + email,e);
+			}
+
 		} finally {
 			freeConnection();
 		}
+
+		if(pageContext != null){
+			Registration currentRegistration = (Registration) pageContext.getAttribute("tag_registration");
+			if(currentRegistration != null){
+				cachedRegistration = currentRegistration;
+			}
+			currentRegistration = this;
+			pageContext.setAttribute((var == null ? "tag_registration" : var), currentRegistration);
+		}
+
 		return EVAL_PAGE;
 	}
 
 	public int doEndTag() throws JspException {
 		currentInstance = null;
+
+		if(pageContext != null){
+			if(this.cachedRegistration != null){
+				pageContext.setAttribute((var == null ? "tag_registration" : var), this.cachedRegistration);
+			}else{
+				pageContext.removeAttribute((var == null ? "tag_registration" : var));
+				this.cachedRegistration = null;
+			}
+		}
+
 		try {
+			Boolean error = null; // (Boolean) pageContext.getAttribute("tagError");
+			if(pageContext != null){
+				error = (Boolean) pageContext.getAttribute("tagError");
+			}
+
+			if(error != null && error){
+
+				freeConnection();
+				clearServiceState();
+
+				Exception e = (Exception) pageContext.getAttribute("tagErrorException");
+				String message = (String) pageContext.getAttribute("tagErrorMessage");
+
+				Tag parent = getParent();
+				if(parent != null){
+					return parent.doEndTag();
+				}else if(e != null && message != null){
+					throw new JspException(message,e);
+				}else if(parent == null){
+					pageContext.removeAttribute("tagError");
+					pageContext.removeAttribute("tagErrorException");
+					pageContext.removeAttribute("tagErrorMessage");
+				}
+			}
 			if (commitNeeded) {
-				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.registration set official_first_name = ?, official_last_name = ?, official_full_name = ?, official_institution = ?, first_name = ?, last_name = ?, institution = ?, orcid_id = ?, gsuite_email = ?, slack_id = ?, github_id = ?, twitter_id = ?, expertise = ?, therapeutic_area = ?, assistant_email = ?, enclave = ?, workstreams = ?, created = ?, updated = ?, emailed = ? where email = ?");
-				stmt.setString(1,officialFirstName);
-				stmt.setString(2,officialLastName);
-				stmt.setString(3,officialFullName);
-				stmt.setString(4,officialInstitution);
-				stmt.setString(5,firstName);
-				stmt.setString(6,lastName);
-				stmt.setString(7,institution);
-				stmt.setString(8,orcidId);
-				stmt.setString(9,gsuiteEmail);
-				stmt.setString(10,slackId);
-				stmt.setString(11,githubId);
-				stmt.setString(12,twitterId);
-				stmt.setString(13,expertise);
-				stmt.setString(14,therapeuticArea);
-				stmt.setString(15,assistantEmail);
-				stmt.setBoolean(16,enclave);
-				stmt.setBoolean(17,workstreams);
-				stmt.setTimestamp(18,created == null ? null : new java.sql.Timestamp(created.getTime()));
-				stmt.setTimestamp(19,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
-				stmt.setTimestamp(20,emailed == null ? null : new java.sql.Timestamp(emailed.getTime()));
+				PreparedStatement stmt = getConnection().prepareStatement("update n3c_admin.registration set official_first_name = ?, official_last_name = ?, official_full_name = ?, official_institution = ?, first_name = ?, last_name = ?, institution = ?, orcid_id = ?, gsuite_email = ?, slack_id = ?, github_id = ?, twitter_id = ?, expertise = ?, therapeutic_area = ?, assistant_email = ?, enclave = ?, workstreams = ?, created = ?, updated = ?, emailed = ? where email = ? ");
+				stmt.setString( 1, officialFirstName );
+				stmt.setString( 2, officialLastName );
+				stmt.setString( 3, officialFullName );
+				stmt.setString( 4, officialInstitution );
+				stmt.setString( 5, firstName );
+				stmt.setString( 6, lastName );
+				stmt.setString( 7, institution );
+				stmt.setString( 8, orcidId );
+				stmt.setString( 9, gsuiteEmail );
+				stmt.setString( 10, slackId );
+				stmt.setString( 11, githubId );
+				stmt.setString( 12, twitterId );
+				stmt.setString( 13, expertise );
+				stmt.setString( 14, therapeuticArea );
+				stmt.setString( 15, assistantEmail );
+				stmt.setBoolean( 16, enclave );
+				stmt.setBoolean( 17, workstreams );
+				stmt.setTimestamp( 18, created );
+				stmt.setTimestamp( 19, updated );
+				stmt.setTimestamp( 20, emailed );
 				stmt.setString(21,email);
 				stmt.executeUpdate();
 				stmt.close();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
+			log.error("Error: IOException while writing to the user", e);
+
+			freeConnection();
+			clearServiceState();
+
+			Tag parent = getParent();
+			if(parent != null){
+				pageContext.setAttribute("tagError", true);
+				pageContext.setAttribute("tagErrorException", e);
+				pageContext.setAttribute("tagErrorMessage", "Error: IOException while writing to the user");
+				return parent.doEndTag();
+			}else{
+				throw new JspTagException("Error: IOException while writing to the user");
+			}
+
 		} finally {
 			clearServiceState();
 			freeConnection();
@@ -166,68 +241,77 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		return super.doEndTag();
 	}
 
-	public void insertEntity() throws JspException {
-		try {
-			if (officialFirstName == null)
-				officialFirstName = "";
-			if (officialLastName == null)
-				officialLastName = "";
-			if (officialFullName == null)
-				officialFullName = "";
-			if (officialInstitution == null)
-				officialInstitution = "";
-			if (firstName == null)
-				firstName = "";
-			if (lastName == null)
-				lastName = "";
-			if (institution == null)
-				institution = "";
-			if (orcidId == null)
-				orcidId = "";
-			if (gsuiteEmail == null)
-				gsuiteEmail = "";
-			if (slackId == null)
-				slackId = "";
-			if (githubId == null)
-				githubId = "";
-			if (twitterId == null)
-				twitterId = "";
-			if (expertise == null)
-				expertise = "";
-			if (therapeuticArea == null)
-				therapeuticArea = "";
-			if (assistantEmail == null)
-				assistantEmail = "";
-			PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.registration(email,official_first_name,official_last_name,official_full_name,official_institution,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,enclave,workstreams,created,updated,emailed) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			stmt.setString(1,email);
-			stmt.setString(2,officialFirstName);
-			stmt.setString(3,officialLastName);
-			stmt.setString(4,officialFullName);
-			stmt.setString(5,officialInstitution);
-			stmt.setString(6,firstName);
-			stmt.setString(7,lastName);
-			stmt.setString(8,institution);
-			stmt.setString(9,orcidId);
-			stmt.setString(10,gsuiteEmail);
-			stmt.setString(11,slackId);
-			stmt.setString(12,githubId);
-			stmt.setString(13,twitterId);
-			stmt.setString(14,expertise);
-			stmt.setString(15,therapeuticArea);
-			stmt.setString(16,assistantEmail);
-			stmt.setBoolean(17,enclave);
-			stmt.setBoolean(18,workstreams);
-			stmt.setTimestamp(19,created == null ? null : new java.sql.Timestamp(created.getTime()));
-			stmt.setTimestamp(20,updated == null ? null : new java.sql.Timestamp(updated.getTime()));
-			stmt.setTimestamp(21,emailed == null ? null : new java.sql.Timestamp(emailed.getTime()));
-			stmt.executeUpdate();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new JspTagException("Error: IOException while writing to the user");
-		} finally {
-			freeConnection();
+	public void insertEntity() throws JspException, SQLException {
+		if (officialFirstName == null){
+			officialFirstName = "";
 		}
+		if (officialLastName == null){
+			officialLastName = "";
+		}
+		if (officialFullName == null){
+			officialFullName = "";
+		}
+		if (officialInstitution == null){
+			officialInstitution = "";
+		}
+		if (firstName == null){
+			firstName = "";
+		}
+		if (lastName == null){
+			lastName = "";
+		}
+		if (institution == null){
+			institution = "";
+		}
+		if (orcidId == null){
+			orcidId = "";
+		}
+		if (gsuiteEmail == null){
+			gsuiteEmail = "";
+		}
+		if (slackId == null){
+			slackId = "";
+		}
+		if (githubId == null){
+			githubId = "";
+		}
+		if (twitterId == null){
+			twitterId = "";
+		}
+		if (expertise == null){
+			expertise = "";
+		}
+		if (therapeuticArea == null){
+			therapeuticArea = "";
+		}
+		if (assistantEmail == null){
+			assistantEmail = "";
+		}
+		PreparedStatement stmt = getConnection().prepareStatement("insert into n3c_admin.registration(email,official_first_name,official_last_name,official_full_name,official_institution,first_name,last_name,institution,orcid_id,gsuite_email,slack_id,github_id,twitter_id,expertise,therapeutic_area,assistant_email,enclave,workstreams,created,updated,emailed) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		stmt.setString(1,email);
+		stmt.setString(2,officialFirstName);
+		stmt.setString(3,officialLastName);
+		stmt.setString(4,officialFullName);
+		stmt.setString(5,officialInstitution);
+		stmt.setString(6,firstName);
+		stmt.setString(7,lastName);
+		stmt.setString(8,institution);
+		stmt.setString(9,orcidId);
+		stmt.setString(10,gsuiteEmail);
+		stmt.setString(11,slackId);
+		stmt.setString(12,githubId);
+		stmt.setString(13,twitterId);
+		stmt.setString(14,expertise);
+		stmt.setString(15,therapeuticArea);
+		stmt.setString(16,assistantEmail);
+		stmt.setBoolean(17,enclave);
+		stmt.setBoolean(18,workstreams);
+		stmt.setTimestamp(19,created);
+		stmt.setTimestamp(20,updated);
+		stmt.setTimestamp(21,emailed);
+		stmt.executeUpdate();
+		stmt.close();
+		freeConnection();
 	}
 
 	public String getEmail () {
@@ -511,58 +595,70 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		return workstreams;
 	}
 
-	public Date getCreated () {
+	public Timestamp getCreated () {
 		return created;
 	}
 
-	public void setCreated (Date created) {
+	public void setCreated (Timestamp created) {
 		this.created = created;
 		commitNeeded = true;
 	}
 
-	public Date getActualCreated () {
+	public Timestamp getActualCreated () {
 		return created;
 	}
 
 	public void setCreatedToNow ( ) {
-		this.created = new java.util.Date();
+		this.created = new java.sql.Timestamp(new java.util.Date().getTime());
 		commitNeeded = true;
 	}
 
-	public Date getUpdated () {
+	public Timestamp getUpdated () {
 		return updated;
 	}
 
-	public void setUpdated (Date updated) {
+	public void setUpdated (Timestamp updated) {
 		this.updated = updated;
 		commitNeeded = true;
 	}
 
-	public Date getActualUpdated () {
+	public Timestamp getActualUpdated () {
 		return updated;
 	}
 
 	public void setUpdatedToNow ( ) {
-		this.updated = new java.util.Date();
+		this.updated = new java.sql.Timestamp(new java.util.Date().getTime());
 		commitNeeded = true;
 	}
 
-	public Date getEmailed () {
+	public Timestamp getEmailed () {
 		return emailed;
 	}
 
-	public void setEmailed (Date emailed) {
+	public void setEmailed (Timestamp emailed) {
 		this.emailed = emailed;
 		commitNeeded = true;
 	}
 
-	public Date getActualEmailed () {
+	public Timestamp getActualEmailed () {
 		return emailed;
 	}
 
 	public void setEmailedToNow ( ) {
-		this.emailed = new java.util.Date();
+		this.emailed = new java.sql.Timestamp(new java.util.Date().getTime());
 		commitNeeded = true;
+	}
+
+	public String getVar () {
+		return var;
+	}
+
+	public void setVar (String var) {
+		this.var = var;
+	}
+
+	public String getActualVar () {
+		return var;
 	}
 
 	public static String emailValue() throws JspException {
@@ -693,7 +789,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static boolean enclaveValue() throws JspException {
+	public static Boolean enclaveValue() throws JspException {
 		try {
 			return currentInstance.getEnclave();
 		} catch (Exception e) {
@@ -701,7 +797,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static boolean workstreamsValue() throws JspException {
+	public static Boolean workstreamsValue() throws JspException {
 		try {
 			return currentInstance.getWorkstreams();
 		} catch (Exception e) {
@@ -709,7 +805,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static Date createdValue() throws JspException {
+	public static Timestamp createdValue() throws JspException {
 		try {
 			return currentInstance.getCreated();
 		} catch (Exception e) {
@@ -717,7 +813,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static Date updatedValue() throws JspException {
+	public static Timestamp updatedValue() throws JspException {
 		try {
 			return currentInstance.getUpdated();
 		} catch (Exception e) {
@@ -725,7 +821,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		}
 	}
 
-	public static Date emailedValue() throws JspException {
+	public static Timestamp emailedValue() throws JspException {
 		try {
 			return currentInstance.getEmailed();
 		} catch (Exception e) {
@@ -758,6 +854,7 @@ public class Registration extends N3CLoginTagLibTagSupport {
 		newRecord = false;
 		commitNeeded = false;
 		parentEntities = new Vector<N3CLoginTagLibTagSupport>();
+		this.var = null;
 
 	}
 
