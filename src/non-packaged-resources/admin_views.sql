@@ -44,7 +44,7 @@ SELECT -- InCommon-federated, but name mismatch
   	registration.official_institution = registration_remap.incommon
 ;
 
-CREATE VIEW n3c_admin.staging_user_non_incommon AS
+CREATE or replace VIEW n3c_admin.staging_user_non_incommon AS
 SELECT -- not InCommon-federated, but a ROR organization
  	registration.email,
     registration.official_first_name,
@@ -140,7 +140,7 @@ SELECT
 FROM staging_user_nih
 ;
 
-CREATE VIEW n3c_admin.dua_status AS
+CREATE or replace VIEW n3c_admin.dua_status AS
 SELECT DISTINCT
 	institutionid,
 	official_institution,
@@ -160,7 +160,7 @@ WHERE incommon=official_institution
   AND ror=name and institutionid=id
 ;
 
-create view n3c_admin.user_org_map_step1 as
+create or replace view n3c_admin.user_org_map_step1 as
 select  -- standard InCommon connection listed in DUA master
     email,
     id as ror_id,
@@ -179,7 +179,7 @@ where registration.official_institution = incommon
   and ror = name
 ;
 
-create view n3c_admin.user_org_map as
+create or replace view n3c_admin.user_org_map as
 select
     *,
 	false as citizen_scientist,
@@ -302,7 +302,7 @@ natural left join
 (select email,joined as synthetic from membership where label='synthetic') as t6
 ;
 
-create view n3c_admin.gsuite_view as
+create or replace view n3c_admin.gsuite_view as
 select
 	registration.email,
 	official_first_name,
@@ -311,7 +311,7 @@ select
 	last_name,
 	ror_id,
 	ror_name,
-	duaexecuted as dua_executed,
+	duaexecuted::text as dua_executed,
 	una_path,
 	orcid_id,
 	gsuite_email,
