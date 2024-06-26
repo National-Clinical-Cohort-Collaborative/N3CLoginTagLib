@@ -1,3 +1,18 @@
+create or replace view n3c_admin.citizen_master_air as
+select
+	email as email_address,
+	first_name,
+	last_name,
+	date as date_of_dua_signed,
+	null as minor,
+	first_name_minor as minor_first_name,
+	last_name_minor as minor_last_name,
+	email_minor as minor_email,
+	case when type = 'COVID' then 'Tenant' else 'COVID' end as covid_tenant
+from airtable.citizens
+;
+
+
 CREATE VIEW n3c_admin.staging_user_incommon AS
 SELECT -- InCommon-federated
  	registration.email,
